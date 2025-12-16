@@ -1,0 +1,192 @@
+import { useState, useEffect } from "react";
+import { Sparkles, Star } from "lucide-react";
+
+// Padající hvězdy/částice
+const StarField = () => {
+  const stars = Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 1,
+    duration: Math.random() * 3 + 2,
+    delay: Math.random() * 5,
+    opacity: Math.random() * 0.8 + 0.2,
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className="absolute rounded-full bg-gold animate-twinkle"
+          style={{
+            left: `${star.x}%`,
+            top: `${star.y}%`,
+            width: star.size,
+            height: star.size,
+            animationDuration: `${star.duration}s`,
+            animationDelay: `${star.delay}s`,
+            opacity: star.opacity,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Plovoucí světelné pruhy
+const LightBeams = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-gold/30 to-transparent animate-beam-1" />
+      <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-gold/20 to-transparent animate-beam-2" />
+      <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-gold/30 to-transparent animate-beam-3" />
+    </div>
+  );
+};
+
+// Zlaté částice stoupající nahoru
+const RisingParticles = () => {
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 8 + 6,
+    delay: Math.random() * 10,
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((particle) => (
+        <div
+          key={particle.id}
+          className="absolute rounded-full bg-gradient-to-t from-gold to-gold-light animate-rise"
+          style={{
+            left: `${particle.x}%`,
+            bottom: "-10%",
+            width: particle.size,
+            height: particle.size,
+            animationDuration: `${particle.duration}s`,
+            animationDelay: `${particle.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+const PF2026 = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+    const timer = setTimeout(() => setShowContent(true), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-pf-dark relative flex items-center justify-center overflow-hidden">
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-radial from-pf-dark via-pf-dark to-black opacity-90" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gold/5 via-transparent to-transparent" />
+      
+      {/* Background effects */}
+      <StarField />
+      <LightBeams />
+      <RisingParticles />
+      
+      {/* Main content */}
+      <div className="relative z-10 text-center px-4">
+        {/* Top decoration */}
+        <div 
+          className={`flex justify-center mb-8 transition-all duration-1000 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
+          }`}
+        >
+          <div className="relative">
+            <Star className="w-8 h-8 text-gold animate-pulse-glow" fill="currentColor" />
+            <div className="absolute inset-0 w-8 h-8 bg-gold/30 blur-xl rounded-full" />
+          </div>
+        </div>
+
+        {/* PF text */}
+        <div 
+          className={`transition-all duration-1000 delay-300 ${
+            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
+          }`}
+        >
+          <span className="font-display text-pf-gold text-2xl md:text-3xl tracking-[0.5em] uppercase mb-4 block animate-shimmer bg-gradient-to-r from-gold via-gold-light to-gold bg-[length:200%_100%] bg-clip-text text-transparent">
+            Pour Féliciter
+          </span>
+        </div>
+
+        {/* Year 2026 */}
+        <div 
+          className={`relative my-8 transition-all duration-1200 delay-500 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
+          <h1 className="font-display text-[8rem] md:text-[12rem] lg:text-[16rem] font-bold leading-none tracking-tighter">
+            <span className="bg-gradient-to-b from-gold via-gold-light to-gold/60 bg-clip-text text-transparent drop-shadow-2xl animate-glow">
+              2026
+            </span>
+          </h1>
+          {/* Glow effect behind the number */}
+          <div className="absolute inset-0 flex items-center justify-center -z-10">
+            <div className="w-64 h-64 md:w-96 md:h-96 bg-gold/10 rounded-full blur-3xl animate-pulse-slow" />
+          </div>
+        </div>
+
+        {/* Decorative line */}
+        <div 
+          className={`flex items-center justify-center gap-4 my-8 transition-all duration-1000 delay-700 ${
+            showContent ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+          }`}
+        >
+          <div className="h-px w-16 md:w-32 bg-gradient-to-r from-transparent via-gold to-transparent" />
+          <Sparkles className="w-5 h-5 text-gold animate-spin-slow" />
+          <div className="h-px w-16 md:w-32 bg-gradient-to-r from-transparent via-gold to-transparent" />
+        </div>
+
+        {/* Wishes text */}
+        <div 
+          className={`space-y-4 transition-all duration-1000 delay-900 ${
+            showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
+          <p className="font-serif text-pf-cream/90 text-xl md:text-2xl lg:text-3xl tracking-wide">
+            Hodně štěstí, zdraví a lásky
+          </p>
+          <p className="font-serif text-pf-cream/60 text-lg md:text-xl tracking-wider">
+            v novém roce
+          </p>
+        </div>
+
+        {/* Bottom signature */}
+        <div 
+          className={`mt-16 transition-all duration-1000 delay-1100 ${
+            showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          }`}
+        >
+          <p className="font-script text-gold/80 text-2xl md:text-3xl">
+            s láskou
+          </p>
+        </div>
+
+        {/* Floating sparkles around */}
+        <div className="absolute -top-20 -left-20 w-40 h-40 opacity-30">
+          <Sparkles className="w-full h-full text-gold/30 animate-float" />
+        </div>
+        <div className="absolute -bottom-20 -right-20 w-32 h-32 opacity-20">
+          <Sparkles className="w-full h-full text-gold/20 animate-float-delayed" />
+        </div>
+      </div>
+
+      {/* Vignette effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(0,0,0,0.4)_100%)] pointer-events-none" />
+    </div>
+  );
+};
+
+export default PF2026;
