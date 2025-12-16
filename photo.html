@@ -125,19 +125,7 @@
     }
 
     /* malá nápověda dole */
-    .hint{
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-soft);
-      z-index: 2;
-      opacity: 0.95;
-      pointer-events: none;
-    }
+  
   </style>
 </head>
 
@@ -152,7 +140,6 @@
     <div class="upload-box" id="uploadLabel">Vyber fotku</div>
   </main>
 
-  <div class="hint">Tip: kolečko = zoom • dva prsty = pinch</div>
 
   <script>
     // ====== hvězdičky (náhodně generované) ======
@@ -195,14 +182,16 @@
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     function limits(){
-      // čím větší scale, tím víc můžeš posunout (protože fotka je "větší")
-      const extra = Math.max(0, scale - 1);
-      return {
-        x: card.clientWidth  * (0.18 + extra * 0.22),
-        y: card.clientHeight * (0.18 + extra * 0.22),
-      };
-    }
+  const extra = Math.max(0, scale - 1);
 
+  const baseX = card.clientWidth * 0.22;
+  const baseY = card.clientHeight * 0.22;
+
+  return {
+    x: baseX + extra * card.clientWidth * 0.25,
+    y: baseY + extra * card.clientHeight * 0.35
+  };
+}
     function applyTransform(){
       const lim = limits();
       currentX = clamp(currentX, -lim.x, lim.x);
