@@ -14,14 +14,11 @@
       --bg0:#030716;
       --bg1:#06102c;
       --bg2:#0a1f4d;
-      --nebula:#6a5cff;
 
       --gold1:#f7e6a3;
       --gold2:#d7b85f;
 
       --text:#f6f1dd;
-      --muted:rgba(246,241,221,0.82);
-      --card:rgba(5,10,26,0.45);
       --stroke:rgba(247,230,163,0.22);
     }
 
@@ -42,7 +39,7 @@
         linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
     }
 
-    /* ===== VŽDY UPROSTŘED ===== */
+    /* vždy uprostřed */
     .center{
       position: fixed;
       inset: 0;
@@ -52,7 +49,7 @@
       z-index: 2;
     }
 
-    /* ===== STARFIELD (bez setInterval, stabilní pro mobil) ===== */
+    /* hvězdičky – “index styl”, ale stabilní (bez DOM spamování) */
     #starsLayer{
       position:fixed;
       inset:0;
@@ -70,25 +67,22 @@
       opacity: 0;
       animation: rise var(--d) linear infinite;
       animation-delay: var(--delay);
-      filter: drop-shadow(0 0 10px rgba(215,184,95,0.18));
+      filter: drop-shadow(0 0 12px rgba(215,184,95,0.16));
       will-change: transform, opacity;
     }
 
-    /* tečka */
     .star.dot{
-      border-radius: 999px;
+      border-radius:999px;
       background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
-      box-shadow: 0 0 14px rgba(215,184,95,0.18);
+      box-shadow:0 0 14px rgba(215,184,95,0.14);
     }
 
-    /* diamant */
     .star.diamond{
       background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.80));
       transform: rotate(45deg);
-      box-shadow: 0 0 14px rgba(215,184,95,0.16);
+      box-shadow:0 0 14px rgba(215,184,95,0.12);
     }
 
-    /* hvězdička (křížek) */
     .star.cross{
       background: transparent;
       width: calc(var(--s) * 1.3);
@@ -102,7 +96,7 @@
       margin:auto;
       background: rgba(247,230,163,0.88);
       border-radius: 2px;
-      box-shadow: 0 0 12px rgba(215,184,95,0.14);
+      box-shadow:0 0 12px rgba(215,184,95,0.12);
     }
     .star.cross::before{ width: 100%; height: 2px; }
     .star.cross::after{ width: 2px; height: 100%; }
@@ -114,44 +108,37 @@
       100% { transform: translateY(-240vh) translateX(var(--drift)) scale(1.05); opacity: 0; }
     }
 
-    /* ===== karta jako index ===== */
-    .wrap{
-      width:min(980px, 96vw);
-      text-align:center;
-      padding: 34px 18px 26px;
-      border-radius:26px;
-      background: var(--card);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
-      position:relative;
-      overflow:hidden;
-    }
-
-    .pfTitle{
-      font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(26px, 4.6vw, 40px);
-      letter-spacing:0.14em;
-      color: var(--gold1);
-      text-shadow: 0 10px 38px rgba(215,184,95,0.18);
-      margin-bottom: 18px;
-    }
-
+    /* JEDEN jediný obdélník pro fotku */
     .photoCard{
       position: relative;
-      width: min(860px, 92%);
-      height: min(340px, 42vw);
-      margin: 0 auto;
+      width: min(980px, 96vw);
+      height: min(520px, 62vw);
+      border-radius: 26px;
       background: rgba(255,255,255,0.92);
-      border-radius: 22px;
       box-shadow:
-        0 20px 70px rgba(0,0,0,0.25),
+        0 30px 90px rgba(0,0,0,0.35),
         0 0 0 1px rgba(255,255,255,0.20);
       overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
       cursor:pointer;
+      z-index:2;
+    }
+
+    /* titulek uvnitř stejného obdélníku (žádná další karta) */
+    .pfTitle{
+      position:absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family:"Playfair Display","Times New Roman",serif;
+      font-size: clamp(24px, 4.6vw, 40px);
+      letter-spacing:0.14em;
+      color: rgba(10,25,60,0.85);
+      text-shadow: 0 10px 28px rgba(0,0,0,0.10);
+      pointer-events:none;
+      z-index:6;
     }
 
     #photoInput{ display:none; }
@@ -169,6 +156,7 @@
       z-index:5;
       transition: all .18s ease;
     }
+
     .photoCard:hover .upload-box{
       border-color: rgba(10, 25, 60, 0.36);
       color: rgba(10, 25, 60, 0.82);
@@ -199,51 +187,45 @@
     }
 
     @media (max-width: 520px){
-      .wrap{ padding: 28px 14px 20px; }
-      .photoCard{ height: min(340px, 60vw); }
+      .photoCard{ height: min(520px, 70vw); border-radius: 22px; }
       .upload-box{ font-size: 12px; padding: 12px 26px; }
+      .pfTitle{ top: 18px; }
     }
   </style>
 </head>
 
 <body>
-
   <div id="starsLayer" aria-hidden="true"></div>
 
   <div class="center">
-    <main class="wrap" aria-label="Foto PF 2026">
+    <main class="photoCard" id="photoCard" aria-label="Nahrát fotku">
       <div class="pfTitle">PF 2026</div>
 
-      <div class="photoCard" id="photoCard" aria-label="Nahrát fotku">
-        <input type="file" id="photoInput" accept="image/*">
-        <img id="preview" alt="Vybraná fotka" draggable="false">
-        <div class="photo-overlay"></div>
-        <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
-      </div>
+      <input type="file" id="photoInput" accept="image/*">
+      <img id="preview" alt="Vybraná fotka" draggable="false">
+      <div class="photo-overlay"></div>
+
+      <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
     </main>
   </div>
 
   <script>
-    /* ===== STARFIELD: vytvoří se JEDNOU (stabilní) ===== */
+    /* STARFIELD: vytvoří se jednou */
     const starsLayer = document.getElementById("starsLayer");
 
     function createStarfield(count = 55){
       starsLayer.innerHTML = "";
-      const types = ["dot","dot","dot","diamond","cross"]; // víc teček, pár hvězdiček
+      const types = ["dot","dot","dot","diamond","cross"];
 
       for(let i=0;i<count;i++){
         const el = document.createElement("div");
         const type = types[Math.floor(Math.random() * types.length)];
         el.className = "star " + type;
 
-        const size =
-          type === "cross"
-            ? (6 + Math.random()*10)      // cross je “ikonka”, ať je vidět
-            : (2 + Math.random()*5);      // tečky/diamant menší
-
-        const dur = 9 + Math.random() * 12;               // 9–21s
-        const delay = (-Math.random() * dur);             // ať už běží
-        const drift = (-40 + Math.random() * 80);         // -40..+40 px
+        const size = type === "cross" ? (6 + Math.random()*10) : (2 + Math.random()*5);
+        const dur = 9 + Math.random() * 12;          // 9–21s
+        const delay = (-Math.random() * dur);        // už běží
+        const drift = (-40 + Math.random() * 80);    // -40..+40 px
 
         el.style.setProperty("--x", (Math.random()*100) + "vw");
         el.style.setProperty("--s", size + "px");
@@ -256,9 +238,9 @@
     }
 
     createStarfield();
-    window.addEventListener("resize", () => createStarfield());
+    // (nechávám bez resize listeneru, ať se to na mobilu zbytečně nepřekresluje)
 
-    /* ===== upload + posun + zoom ===== */
+    /* UPLOAD + PAN + ZOOM */
     const photoCard = document.getElementById("photoCard");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
