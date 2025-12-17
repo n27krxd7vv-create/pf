@@ -11,6 +11,7 @@
 
   <style>
     :root{
+      /* === STEJNÉ BARVY JAKO INDEX === */
       --bg0:#030716;
       --bg1:#06102c;
       --bg2:#0a1f4d;
@@ -23,6 +24,11 @@
       --muted:rgba(246,241,221,0.82);
       --card:rgba(5,10,26,0.45);
       --stroke:rgba(247,230,163,0.22);
+
+      /* photo UI */
+      --cardSolid: rgba(255,255,255,0.92);
+      --ctaBorder: rgba(10, 25, 60, 0.22);
+      --ctaText: rgba(10, 25, 60, 0.65);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -30,15 +36,16 @@
     body{
       min-height:100vh;
       width:100vw;
-      overflow:hidden;
-      font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:18px;
+      padding:16px;
+      font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow:hidden;
       position:relative;
+      color: var(--text);
 
+      /* === STEJNÉ POZADÍ JAKO INDEX === */
       background:
         radial-gradient(900px 600px at 50% 35%, rgba(106,92,255,0.20), transparent 60%),
         radial-gradient(1100px 700px at 35% 75%, rgba(215,184,95,0.10), transparent 60%),
@@ -46,7 +53,7 @@
         linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
     }
 
-    /* hvězdičky */
+    /* === HVĚZDIČKY (STEJNÉ JAKO INDEX) === */
     #starsLayer{
       position:fixed;
       inset:0;
@@ -65,12 +72,26 @@
       box-shadow:0 0 14px rgba(215,184,95,0.22);
       opacity:0;
       animation: rise var(--d) linear forwards;
-
+    }
+    .plusParticle{
+      position:absolute;
+      left:var(--x);
+      top:110vh;
+      color:rgba(247,230,163,0.85);
+      font-size:var(--fs);
+      opacity:0;
+      text-shadow:0 0 14px rgba(215,184,95,0.18);
+      animation: risePlus var(--d) linear forwards;
+    }
     @keyframes rise{
-      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
-      10%  { opacity: 0.9; }
-      70%  { opacity: 0.55; }
-      100% { transform: translateY(-240vh) rotate(25deg); opacity: 0; }
+      0%   { transform:translateY(0) scale(0.95); opacity:0; }
+      10%  { opacity:0.9; }
+      100% { transform:translateY(calc(-130vh - var(--y))) scale(1.05); opacity:0; }
+    }
+    @keyframes risePlus{
+      0%   { transform:translateY(0) rotate(0deg); opacity:0; }
+      12%  { opacity:0.9; }
+      100% { transform:translateY(calc(-130vh - var(--y))) rotate(30deg); opacity:0; }
     }
 
     /* karta */
@@ -79,7 +100,7 @@
       z-index:2;
       width: min(980px, 94vw);
       height: min(520px, 62vw);
-      background: rgba(255,255,255,0.92);
+      background: var(--cardSolid);
       border-radius: 26px;
       box-shadow:
         0 30px 90px rgba(0,0,0,0.35),
@@ -99,15 +120,14 @@
       to  { opacity:1; transform: translateY(0) scale(1); }
     }
 
-    /* input hidden */
     #photoInput{ display:none; }
 
     /* CTA uprostřed */
     .upload-box{
       padding: 12px 30px;
       border-radius: 999px;
-      border: 2px dashed rgba(10, 25, 60, 0.22);
-      color: rgba(10, 25, 60, 0.65);
+      border: 2px dashed var(--ctaBorder);
+      color: var(--ctaText);
       font-size: 13px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -124,7 +144,7 @@
       transform: translateY(-1px);
     }
 
-    /* fotka (posun/zoom nechávám tak jak máš) */
+    /* fotka */
     #preview{
       position:absolute;
       inset:0;
@@ -139,16 +159,14 @@
       transform: translate(0px,0px) scale(1);
     }
 
-    /* jemný glow přes fotku */
     .photo-overlay{
       position:absolute;
       inset:0;
-      background: radial-gradient(circle at 50% 20%, rgba(255,211,138,0.10), transparent 55%);
+      background: radial-gradient(circle at 50% 20%, rgba(106,92,255,0.12), transparent 55%);
       pointer-events:none;
       z-index:3;
     }
 
-    /* (volitelné) mobilní poměry */
     @media (max-width: 520px){
       .card{
         width: min(980px, 96vw);
@@ -164,49 +182,55 @@
 </head>
 
 <body>
-  <!-- stejné pozadí / hvězdičky jako index -->
-  <div id="starfield" aria-hidden="true"></div>
+  <!-- STEJNÉ HVĚZDIČKY JAKO INDEX -->
+  <div id="starsLayer" aria-hidden="true"></div>
 
   <main class="card" id="card" aria-label="nahrání fotky">
     <input type="file" id="photoInput" accept="image/*">
-
     <img id="preview" alt="Vybraná fotka" draggable="false">
     <div class="photo-overlay"></div>
-
     <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
   </main>
 
   <script>
-    // --- STARFIELD (stejná logika si patří i do index.html) ---
-    const starfield = document.getElementById("starfield");
+    /* ===== HVĚZDIČKY (STEJNÉ JAKO INDEX) ===== */
+    const starsLayer = document.getElementById("starsLayer");
 
-    function createStars(count = 46){
-      starfield.innerHTML = "";
-      const types = ["dot","dot","dot","diamond","cross"]; // víc teček, pár hvězdiček
-      for(let i=0;i<count;i++){
-        const s = document.createElement("div");
-        const type = types[Math.floor(Math.random()*types.length)];
-        s.className = `star ${type}`;
+    function spawnStarParticle(){
+      const el = document.createElement("div");
+      const isPlus = Math.random() < 0.35;
 
-        const size = (type === "cross") ? (2 + Math.random()*3) : (1.5 + Math.random()*3.5);
-        const dur  = 10 + Math.random()*12;     // 10–22s
-        const delay = (-Math.random()*dur) + "s"; // hned běží
+      const x = (Math.random()*100).toFixed(2) + "vw";
+      const size = (2 + Math.random()*4).toFixed(2) + "px";
+      const drift = (Math.random()*70).toFixed(0) + "px";
+      const dur = (7.5 + Math.random()*7.5).toFixed(2) + "s";
 
-        s.style.setProperty("--x", (Math.random()*100) + "vw");
-        s.style.setProperty("--s", size + "px");
-        s.style.setProperty("--d", dur + "s");
-        s.style.setProperty("--delay", delay);
-
-        // lehce různá jasnost
-        s.style.opacity = 0;
-        starfield.appendChild(s);
+      if(isPlus){
+        el.className = "plusParticle";
+        el.textContent = Math.random() < 0.5 ? "✦" : "✧";
+        el.style.setProperty("--x", x);
+        el.style.setProperty("--y", drift);
+        el.style.setProperty("--d", dur);
+        el.style.setProperty("--fs", (10 + Math.random()*14).toFixed(0) + "px");
+      } else {
+        el.className = "starParticle";
+        el.style.setProperty("--x", x);
+        el.style.setProperty("--y", drift);
+        el.style.setProperty("--d", dur);
+        el.style.setProperty("--s", size);
       }
+
+      starsLayer.appendChild(el);
+      const ms = (parseFloat(dur) * 1000) + 150;
+      setTimeout(()=> el.remove(), ms);
     }
 
-    createStars();
-    window.addEventListener("resize", () => createStars());
+    setInterval(() => {
+      const n = 1 + Math.floor(Math.random()*2);
+      for(let i=0;i<n;i++) spawnStarParticle();
+    }, 260);
 
-    // --- PHOTO UPLOAD + DRAG ---
+    /* ===== PHOTO UPLOAD + DRAG + ZOOM ===== */
     const card = document.getElementById("card");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
@@ -230,7 +254,6 @@
       applyTransform();
     });
 
-    // drag
     let dragging = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
@@ -239,7 +262,6 @@
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     function limits(){
-      // dovolíme větší posun i dolů/nahoru (kvůli tvému problému)
       return {
         x: card.offsetWidth * 0.28,
         y: card.offsetHeight * 0.28
@@ -283,7 +305,6 @@
       preview.style.cursor = "grab";
     });
 
-    // (bonus) zoom kolečkem na desktopu — když nebudeš chtít, smaž
     card.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
       e.preventDefault();
