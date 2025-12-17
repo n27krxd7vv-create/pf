@@ -11,15 +11,24 @@
 
   <style>
     :root{
+      /* === STEJNÉ BARVY JAKO INDEX === */
       --bg0:#030716;
       --bg1:#06102c;
       --bg2:#0a1f4d;
+      --nebula:#6a5cff;
 
       --gold1:#f7e6a3;
       --gold2:#d7b85f;
 
       --text:#f6f1dd;
+      --muted:rgba(246,241,221,0.82);
+      --card:rgba(5,10,26,0.45);
       --stroke:rgba(247,230,163,0.22);
+
+      /* photo UI */
+      --cardSolid: rgba(255,255,255,0.92);
+      --ctaBorder: rgba(10, 25, 60, 0.22);
+      --ctaText: rgba(10, 25, 60, 0.65);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -27,11 +36,16 @@
     body{
       min-height:100vh;
       width:100vw;
-      overflow:hidden;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:16px;
       font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
+      overflow:hidden;
       position:relative;
+      color: var(--text);
 
+      /* === STEJNÉ POZADÍ JAKO INDEX === */
       background:
         radial-gradient(900px 600px at 50% 35%, rgba(106,92,255,0.20), transparent 60%),
         radial-gradient(1100px 700px at 35% 75%, rgba(215,184,95,0.10), transparent 60%),
@@ -39,17 +53,7 @@
         linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
     }
 
-    /* vždy uprostřed */
-    .center{
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 18px;
-      z-index: 2;
-    }
-
-    /* hvězdičky – “index styl”, ale stabilní (bez DOM spamování) */
+    /* === HVĚZDIČKY (STEJNÉ JAKO INDEX) === */
     #starsLayer{
       position:fixed;
       inset:0;
@@ -57,97 +61,73 @@
       overflow:hidden;
       z-index:1;
     }
-
-    .star{
+    .starParticle{
       position:absolute;
-      left: var(--x);
-      top: 110vh;
-      width: var(--s);
-      height: var(--s);
-      opacity: 0;
-      animation: rise var(--d) linear infinite;
-      animation-delay: var(--delay);
-      filter: drop-shadow(0 0 12px rgba(215,184,95,0.16));
-      will-change: transform, opacity;
-    }
-
-    .star.dot{
+      left:var(--x);
+      top:110vh;
+      width:var(--s);
+      height:var(--s);
       border-radius:999px;
-      background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
-      box-shadow:0 0 14px rgba(215,184,95,0.14);
+      background:linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
+      box-shadow:0 0 14px rgba(215,184,95,0.22);
+      opacity:0;
+      animation: rise var(--d) linear forwards;
     }
-
-    .star.diamond{
-      background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.80));
-      transform: rotate(45deg);
-      box-shadow:0 0 14px rgba(215,184,95,0.12);
-    }
-
-    .star.cross{
-      background: transparent;
-      width: calc(var(--s) * 1.3);
-      height: calc(var(--s) * 1.3);
-    }
-    .star.cross::before,
-    .star.cross::after{
-      content:"";
+    .plusParticle{
       position:absolute;
-      inset:0;
-      margin:auto;
-      background: rgba(247,230,163,0.88);
-      border-radius: 2px;
-      box-shadow:0 0 12px rgba(215,184,95,0.12);
+      left:var(--x);
+      top:110vh;
+      color:rgba(247,230,163,0.85);
+      font-size:var(--fs);
+      opacity:0;
+      text-shadow:0 0 14px rgba(215,184,95,0.18);
+      animation: risePlus var(--d) linear forwards;
     }
-    .star.cross::before{ width: 100%; height: 2px; }
-    .star.cross::after{ width: 2px; height: 100%; }
-
     @keyframes rise{
-      0%   { transform: translateY(0) translateX(0) scale(0.95); opacity: 0; }
-      10%  { opacity: 0.9; }
-      70%  { opacity: 0.55; }
-      100% { transform: translateY(-240vh) translateX(var(--drift)) scale(1.05); opacity: 0; }
+      0%   { transform:translateY(0) scale(0.95); opacity:0; }
+      10%  { opacity:0.9; }
+      100% { transform:translateY(calc(-130vh - var(--y))) scale(1.05); opacity:0; }
+    }
+    @keyframes risePlus{
+      0%   { transform:translateY(0) rotate(0deg); opacity:0; }
+      12%  { opacity:0.9; }
+      100% { transform:translateY(calc(-130vh - var(--y))) rotate(30deg); opacity:0; }
     }
 
-    /* JEDEN jediný obdélník pro fotku */
-    .photoCard{
-      position: relative;
-      width: min(980px, 96vw);
+    /* karta */
+    .card{
+      position:relative;
+      z-index:2;
+      width: min(980px, 94vw);
       height: min(520px, 62vw);
+      background: var(--cardSolid);
       border-radius: 26px;
-      background: rgba(255,255,255,0.92);
       box-shadow:
         0 30px 90px rgba(0,0,0,0.35),
-        0 0 0 1px rgba(255,255,255,0.20);
+        0 0 0 1px rgba(255,255,255,0.18);
       overflow:hidden;
       display:flex;
-      align-items:center;
       justify-content:center;
+      align-items:center;
       cursor:pointer;
-      z-index:2;
+      animation: cardIn 0.7s ease-out forwards;
+      transform: translateY(22px);
+      opacity: 0;
     }
 
-    /* titulek uvnitř stejného obdélníku (žádná další karta) */
-    .pfTitle{
-      position:absolute;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(24px, 4.6vw, 40px);
-      letter-spacing:0.14em;
-      color: rgba(10,25,60,0.85);
-      text-shadow: 0 10px 28px rgba(0,0,0,0.10);
-      pointer-events:none;
-      z-index:6;
+    @keyframes cardIn{
+      from{ opacity:0; transform: translateY(22px) scale(0.985); }
+      to  { opacity:1; transform: translateY(0) scale(1); }
     }
 
     #photoInput{ display:none; }
 
+    /* CTA uprostřed */
     .upload-box{
       padding: 12px 30px;
       border-radius: 999px;
-      border: 2px dashed rgba(10, 25, 60, 0.22);
-      color: rgba(10, 25, 60, 0.70);
+      border: 2px dashed var(--ctaBorder);
+      color: var(--ctaText);
       font-size: 13px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -157,18 +137,19 @@
       transition: all .18s ease;
     }
 
-    .photoCard:hover .upload-box{
+    .card:hover .upload-box{
       border-color: rgba(10, 25, 60, 0.36);
       color: rgba(10, 25, 60, 0.82);
       background: rgba(255,255,255,0.88);
       transform: translateY(-1px);
     }
 
+    /* fotka */
     #preview{
       position:absolute;
       inset:0;
-      width: 140%;
-      height: 140%;
+      width: 120%;
+      height: 120%;
       object-fit: cover;
       display:none;
       z-index:2;
@@ -181,72 +162,81 @@
     .photo-overlay{
       position:absolute;
       inset:0;
-      background: radial-gradient(circle at 50% 20%, rgba(215,184,95,0.10), transparent 55%);
+      background: radial-gradient(circle at 50% 20%, rgba(106,92,255,0.12), transparent 55%);
       pointer-events:none;
       z-index:3;
     }
 
     @media (max-width: 520px){
-      .photoCard{ height: min(520px, 70vw); border-radius: 22px; }
-      .upload-box{ font-size: 12px; padding: 12px 26px; }
-      .pfTitle{ top: 18px; }
+      .card{
+        width: min(980px, 96vw);
+        height: min(520px, 70vw);
+        border-radius: 22px;
+      }
+      .upload-box{
+        font-size: 12px;
+        padding: 12px 26px;
+      }
     }
   </style>
 </head>
 
 <body>
+  <!-- STEJNÉ HVĚZDIČKY JAKO INDEX -->
   <div id="starsLayer" aria-hidden="true"></div>
 
-  <div class="center">
-    <main class="photoCard" id="photoCard" aria-label="Nahrát fotku">
-      <div class="pfTitle">PF 2026</div>
-
-      <input type="file" id="photoInput" accept="image/*">
-      <img id="preview" alt="Vybraná fotka" draggable="false">
-      <div class="photo-overlay"></div>
-
-      <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
-    </main>
-  </div>
+  <main class="card" id="card" aria-label="nahrání fotky">
+    <input type="file" id="photoInput" accept="image/*">
+    <img id="preview" alt="Vybraná fotka" draggable="false">
+    <div class="photo-overlay"></div>
+    <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
+  </main>
 
   <script>
-    /* STARFIELD: vytvoří se jednou */
+    /* ===== HVĚZDIČKY (STEJNÉ JAKO INDEX) ===== */
     const starsLayer = document.getElementById("starsLayer");
 
-    function createStarfield(count = 55){
-      starsLayer.innerHTML = "";
-      const types = ["dot","dot","dot","diamond","cross"];
+    function spawnStarParticle(){
+      const el = document.createElement("div");
+      const isPlus = Math.random() < 0.35;
 
-      for(let i=0;i<count;i++){
-        const el = document.createElement("div");
-        const type = types[Math.floor(Math.random() * types.length)];
-        el.className = "star " + type;
+      const x = (Math.random()*100).toFixed(2) + "vw";
+      const size = (2 + Math.random()*4).toFixed(2) + "px";
+      const drift = (Math.random()*70).toFixed(0) + "px";
+      const dur = (7.5 + Math.random()*7.5).toFixed(2) + "s";
 
-        const size = type === "cross" ? (6 + Math.random()*10) : (2 + Math.random()*5);
-        const dur = 9 + Math.random() * 12;          // 9–21s
-        const delay = (-Math.random() * dur);        // už běží
-        const drift = (-40 + Math.random() * 80);    // -40..+40 px
-
-        el.style.setProperty("--x", (Math.random()*100) + "vw");
-        el.style.setProperty("--s", size + "px");
-        el.style.setProperty("--d", dur + "s");
-        el.style.setProperty("--delay", delay + "s");
-        el.style.setProperty("--drift", drift + "px");
-
-        starsLayer.appendChild(el);
+      if(isPlus){
+        el.className = "plusParticle";
+        el.textContent = Math.random() < 0.5 ? "✦" : "✧";
+        el.style.setProperty("--x", x);
+        el.style.setProperty("--y", drift);
+        el.style.setProperty("--d", dur);
+        el.style.setProperty("--fs", (10 + Math.random()*14).toFixed(0) + "px");
+      } else {
+        el.className = "starParticle";
+        el.style.setProperty("--x", x);
+        el.style.setProperty("--y", drift);
+        el.style.setProperty("--d", dur);
+        el.style.setProperty("--s", size);
       }
+
+      starsLayer.appendChild(el);
+      const ms = (parseFloat(dur) * 1000) + 150;
+      setTimeout(()=> el.remove(), ms);
     }
 
-    createStarfield();
-    // (nechávám bez resize listeneru, ať se to na mobilu zbytečně nepřekresluje)
+    setInterval(() => {
+      const n = 1 + Math.floor(Math.random()*2);
+      for(let i=0;i<n;i++) spawnStarParticle();
+    }, 260);
 
-    /* UPLOAD + PAN + ZOOM */
-    const photoCard = document.getElementById("photoCard");
+    /* ===== PHOTO UPLOAD + DRAG + ZOOM ===== */
+    const card = document.getElementById("card");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
     const uploadLabel = document.getElementById("uploadLabel");
 
-    photoCard.addEventListener("click", () => {
+    card.addEventListener("click", () => {
       if (preview.style.display === "block") return;
       input.click();
     });
@@ -271,19 +261,14 @@
 
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
-    function getPanLimits(){
-      const rect = photoCard.getBoundingClientRect();
-      const imgW = rect.width * 1.40 * scale;
-      const imgH = rect.height * 1.40 * scale;
-      const maxX = Math.max(0, (imgW - rect.width) / 2);
-      const maxY = Math.max(0, (imgH - rect.height) / 2);
-      return { maxX, maxY };
+    function limits(){
+      return {
+        x: card.offsetWidth * 0.28,
+        y: card.offsetHeight * 0.28
+      };
     }
 
     function applyTransform(){
-      const lim = getPanLimits();
-      currentX = clamp(currentX, -lim.maxX, lim.maxX);
-      currentY = clamp(currentY, -lim.maxY, lim.maxY);
       preview.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
     }
 
@@ -301,8 +286,11 @@
 
     preview.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-      currentX = e.clientX - startX;
-      currentY = e.clientY - startY;
+
+      const lim = limits();
+      currentX = clamp(e.clientX - startX, -lim.x, lim.x);
+      currentY = clamp(e.clientY - startY, -lim.y, lim.y);
+
       applyTransform();
       e.preventDefault();
     });
@@ -317,11 +305,11 @@
       preview.style.cursor = "grab";
     });
 
-    photoCard.addEventListener("wheel", (e) => {
+    card.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
       e.preventDefault();
-      const delta = Math.sign(e.deltaY) * -0.08;
-      scale = clamp(scale + delta, 1, 2.6);
+      const delta = Math.sign(e.deltaY) * -0.06;
+      scale = clamp(scale + delta, 1, 2.2);
       applyTransform();
     }, { passive:false });
   </script>
