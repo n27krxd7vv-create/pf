@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PF 2026</title>
+  <title>Vybrat fotku</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +42,7 @@
         linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
     }
 
-    /* ===== VŽDY UPROSTŘED (fix na tvůj problém) ===== */
+    /* ===== VŽDY UPROSTŘED ===== */
     .center{
       position: fixed;
       inset: 0;
@@ -52,7 +52,7 @@
       z-index: 2;
     }
 
-    /* ===== hvězdičky ===== */
+    /* ===== STARFIELD (bez setInterval, stabilní pro mobil) ===== */
     #starsLayer{
       position:fixed;
       inset:0;
@@ -60,233 +60,148 @@
       overflow:hidden;
       z-index:1;
     }
-    .starParticle{
+
+    .star{
       position:absolute;
-      left:var(--x);
-      top:110vh;
-      width:var(--s);
-      height:var(--s);
-      border-radius:999px;
-      background:linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
-      box-shadow:0 0 14px rgba(215,184,95,0.22);
-      opacity:0;
-      animation: rise var(--d) linear forwards;
-    }
-    .plusParticle{
-      position:absolute;
-      left:var(--x);
-      top:110vh;
-      color:rgba(247,230,163,0.85);
-      font-size:var(--fs);
-      opacity:0;
-      text-shadow:0 0 14px rgba(215,184,95,0.18);
-      animation: risePlus var(--d) linear forwards;
-    }
-    @keyframes rise{
-      0%   { transform:translateY(0) scale(0.95); opacity:0; }
-      10%  { opacity:0.9; }
-      100% { transform:translateY(calc(-130vh - var(--y))) scale(1.05); opacity:0; }
-    }
-    @keyframes risePlus{
-      0%   { transform:translateY(0) rotate(0deg); opacity:0; }
-      12%  { opacity:0.9; }
-      100% { transform:translateY(calc(-130vh - var(--y))) rotate(30deg); opacity:0; }
+      left: var(--x);
+      top: 110vh;
+      width: var(--s);
+      height: var(--s);
+      opacity: 0;
+      animation: rise var(--d) linear infinite;
+      animation-delay: var(--delay);
+      filter: drop-shadow(0 0 10px rgba(215,184,95,0.18));
+      will-change: transform, opacity;
     }
 
-    /* ===== 3D FLIP karta ===== */
-    .card3d{
-      width:min(980px, 96vw);
-      height:min(520px, 62vw);
-      perspective: 1600px;
-    }
-    .cardInner{
-      width:100%;
-      height:100%;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 900ms cubic-bezier(.2,.8,.2,1);
-    }
-    .card3d.flip .cardInner{
-      transform: rotateY(180deg);
+    /* tečka */
+    .star.dot{
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
+      box-shadow: 0 0 14px rgba(215,184,95,0.18);
     }
 
-    .face{
+    /* diamant */
+    .star.diamond{
+      background: linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.80));
+      transform: rotate(45deg);
+      box-shadow: 0 0 14px rgba(215,184,95,0.16);
+    }
+
+    /* hvězdička (křížek) */
+    .star.cross{
+      background: transparent;
+      width: calc(var(--s) * 1.3);
+      height: calc(var(--s) * 1.3);
+    }
+    .star.cross::before,
+    .star.cross::after{
+      content:"";
       position:absolute;
       inset:0;
+      margin:auto;
+      background: rgba(247,230,163,0.88);
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(215,184,95,0.14);
+    }
+    .star.cross::before{ width: 100%; height: 2px; }
+    .star.cross::after{ width: 2px; height: 100%; }
+
+    @keyframes rise{
+      0%   { transform: translateY(0) translateX(0) scale(0.95); opacity: 0; }
+      10%  { opacity: 0.9; }
+      70%  { opacity: 0.55; }
+      100% { transform: translateY(-240vh) translateX(var(--drift)) scale(1.05); opacity: 0; }
+    }
+
+    /* ===== karta jako index ===== */
+    .wrap{
+      width:min(980px, 96vw);
+      text-align:center;
+      padding: 34px 18px 26px;
       border-radius:26px;
       background: var(--card);
       border:1px solid var(--stroke);
       backdrop-filter: blur(10px);
       box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+      position:relative;
       overflow:hidden;
-      backface-visibility: hidden;
-
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 40px 18px;
-      text-align:center;
-    }
-    .face.back{
-      transform: rotateY(180deg);
     }
 
-    .topStar{
-      font-size:28px;
-      color:rgba(247,230,163,0.95);
-      text-shadow:0 0 18px rgba(215,184,95,0.25);
-      margin-bottom:14px;
-      animation: popIn 1.1s ease-out forwards;
-      opacity:0;
-      transform: translateY(10px);
-    }
-
-    .year{
-      font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(58px, 10vw, 110px);
-      letter-spacing:0.12em;
-      color: var(--gold1);
-      text-shadow: 0 10px 38px rgba(215,184,95,0.22);
-      animation: textUp 1.2s ease-out forwards;
-      opacity:0;
-      transform: translateY(26px);
-    }
-
-    .sub{
-      margin-top: 10px;
-      font-size: clamp(14px, 2.8vw, 18px);
-      letter-spacing:0.34em;
-      text-transform: uppercase;
-      color: rgba(247,230,163,0.92);
-      animation: textUp 1.2s ease-out forwards;
-      animation-delay: .15s;
-      opacity:0;
-      transform: translateY(26px);
-    }
-
-    .divider{
-      margin: 22px auto 18px;
-      width: min(520px, 86%);
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(247,230,163,0.55), transparent);
-      animation: fadeIn 1.2s ease-out forwards;
-      animation-delay: .25s;
-      opacity:0;
-    }
-
-    .text{
-      font-size: clamp(14px, 3.4vw, 18px);
-      line-height:1.8;
-      color: var(--muted);
-      max-width: 720px;
-      margin: 0 auto;
-      animation: textUp 1.25s ease-out forwards;
-      animation-delay: .35s;
-      opacity:0;
-      transform: translateY(26px);
-    }
-
-    .sign{
-      margin-top: 22px;
-      font-size: 12px;
-      letter-spacing:0.22em;
-      text-transform: uppercase;
-      color: rgba(247,230,163,0.75);
-      animation: fadeIn 1.2s ease-out forwards;
-      animation-delay: .55s;
-      opacity:0;
-    }
-
-    .btn{
-      margin-top: 26px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 12px 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(247,230,163,0.55);
-      background: rgba(215,184,95,0.18);
-      color: rgba(247,230,163,0.95);
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor:pointer;
-      transition: transform .15s ease, background .15s ease;
-      animation: fadeIn 1.2s ease-out forwards;
-      animation-delay: .7s;
-      opacity:0;
-    }
-    .btn:hover{ transform: translateY(-1px); background: rgba(215,184,95,0.28); }
-    .btn:active{ transform: translateY(1px) scale(0.99); }
-
-    .btn[disabled]{
-      opacity:0.55 !important;
-      cursor:not-allowed;
-      transform:none !important;
-    }
-
-    @keyframes textUp{
-      from{ opacity:0; transform:translateY(26px); }
-      to{ opacity:1; transform:translateY(0); }
-    }
-    @keyframes fadeIn{
-      from{ opacity:0; }
-      to{ opacity:1; }
-    }
-    @keyframes popIn{
-      from{ opacity:0; transform:translateY(10px) scale(0.98); }
-      to{ opacity:1; transform:translateY(0) scale(1); }
-    }
-
-    /* BACK FACE (náhled fotostrany) */
-    .pfSmall{
+    .pfTitle{
       font-family:"Playfair Display","Times New Roman",serif;
       font-size: clamp(26px, 4.6vw, 40px);
-      letter-spacing: 0.14em;
+      letter-spacing:0.14em;
       color: var(--gold1);
-      margin-bottom: 18px;
       text-shadow: 0 10px 38px rgba(215,184,95,0.18);
+      margin-bottom: 18px;
     }
-    .photoStub{
+
+    .photoCard{
+      position: relative;
       width: min(860px, 92%);
       height: min(340px, 42vw);
-      border-radius: 22px;
+      margin: 0 auto;
       background: rgba(255,255,255,0.92);
+      border-radius: 22px;
       box-shadow:
         0 20px 70px rgba(0,0,0,0.25),
         0 0 0 1px rgba(255,255,255,0.20);
+      overflow:hidden;
       display:flex;
       align-items:center;
       justify-content:center;
-      color: rgba(10,25,60,0.65);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-size: 12px;
-      border: 2px dashed rgba(10,25,60,0.18);
+      cursor:pointer;
     }
 
-    /* ohňostroj vrstva */
-    #fxLayer{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:9999;
-      overflow:hidden;
+    #photoInput{ display:none; }
+
+    .upload-box{
+      padding: 12px 30px;
+      border-radius: 999px;
+      border: 2px dashed rgba(10, 25, 60, 0.22);
+      color: rgba(10, 25, 60, 0.70);
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.72);
+      user-select:none;
+      z-index:5;
+      transition: all .18s ease;
     }
-    .spark{
+    .photoCard:hover .upload-box{
+      border-color: rgba(10, 25, 60, 0.36);
+      color: rgba(10, 25, 60, 0.82);
+      background: rgba(255,255,255,0.88);
+      transform: translateY(-1px);
+    }
+
+    #preview{
       position:absolute;
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background: rgba(247,230,163,0.95);
-      box-shadow: 0 0 18px rgba(215,184,95,0.35);
-      transform: translate(-50%, -50%);
-      animation: spark 1400ms ease-out forwards; /* pomalejší jiskry */
+      inset:0;
+      width: 140%;
+      height: 140%;
+      object-fit: cover;
+      display:none;
+      z-index:2;
+      cursor: grab;
+      user-select:none;
+      touch-action:none;
+      transform: translate(0px,0px) scale(1);
     }
-    @keyframes spark{
-      0%   { opacity:1; transform: translate(-50%,-50%) scale(1); }
-      100% { opacity:0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.55); }
+
+    .photo-overlay{
+      position:absolute;
+      inset:0;
+      background: radial-gradient(circle at 50% 20%, rgba(215,184,95,0.10), transparent 55%);
+      pointer-events:none;
+      z-index:3;
+    }
+
+    @media (max-width: 520px){
+      .wrap{ padding: 28px 14px 20px; }
+      .photoCard{ height: min(340px, 60vw); }
+      .upload-box{ font-size: 12px; padding: 12px 26px; }
     }
   </style>
 </head>
@@ -294,135 +209,139 @@
 <body>
 
   <div id="starsLayer" aria-hidden="true"></div>
-  <div id="fxLayer" aria-hidden="true"></div>
 
   <div class="center">
-    <div class="card3d" id="card3d" aria-label="PF 2026">
-      <div class="cardInner">
+    <main class="wrap" aria-label="Foto PF 2026">
+      <div class="pfTitle">PF 2026</div>
 
-        <!-- FRONT -->
-        <section class="face front">
-          <div>
-            <div class="topStar">✦</div>
-            <div class="year">2026</div>
-            <div class="sub">POUR FÉLICITER</div>
-            <div class="divider"></div>
-
-            <div class="text">
-              Přejeme vám rok plný štěstí, zdraví a lásky.<br>
-              Ať každý den přináší nové příležitosti,<br>
-              krásné okamžiky a splněné sny.
-            </div>
-
-            <div class="sign">S LÁSKOU A ÚCTOU</div>
-
-            <button class="btn" id="continueBtn">POKRAČOVAT ✨</button>
-          </div>
-        </section>
-
-        <!-- BACK -->
-        <section class="face back" aria-label="Foto strana">
-          <div style="width:100%; display:flex; flex-direction:column; align-items:center; gap:16px;">
-            <div class="pfSmall">PF 2026</div>
-            <div class="photoStub">Vybrat fotku</div>
-          </div>
-        </section>
-
+      <div class="photoCard" id="photoCard" aria-label="Nahrát fotku">
+        <input type="file" id="photoInput" accept="image/*">
+        <img id="preview" alt="Vybraná fotka" draggable="false">
+        <div class="photo-overlay"></div>
+        <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
       </div>
-    </div>
+    </main>
   </div>
 
   <script>
-    /* ===== hvězdičky (stejné jako dřív) ===== */
+    /* ===== STARFIELD: vytvoří se JEDNOU (stabilní) ===== */
     const starsLayer = document.getElementById("starsLayer");
-    function spawnStarParticle(){
-      const el = document.createElement("div");
-      const isPlus = Math.random() < 0.35;
 
-      const x = (Math.random()*100).toFixed(2) + "vw";
-      const size = (2 + Math.random()*4).toFixed(2) + "px";
-      const drift = (Math.random()*70).toFixed(0) + "px";
-      const dur = (7.5 + Math.random()*7.5).toFixed(2) + "s";
+    function createStarfield(count = 55){
+      starsLayer.innerHTML = "";
+      const types = ["dot","dot","dot","diamond","cross"]; // víc teček, pár hvězdiček
 
-      if(isPlus){
-        el.className = "plusParticle";
-        el.textContent = Math.random() < 0.5 ? "✦" : "✧";
-        el.style.setProperty("--x", x);
-        el.style.setProperty("--y", drift);
-        el.style.setProperty("--d", dur);
-        el.style.setProperty("--fs", (10 + Math.random()*14).toFixed(0) + "px");
-      } else {
-        el.className = "starParticle";
-        el.style.setProperty("--x", x);
-        el.style.setProperty("--y", drift);
-        el.style.setProperty("--d", dur);
-        el.style.setProperty("--s", size);
-      }
-
-      starsLayer.appendChild(el);
-      const ms = (parseFloat(dur) * 1000) + 150;
-      setTimeout(()=> el.remove(), ms);
-    }
-    setInterval(() => {
-      const n = 1 + Math.floor(Math.random()*2);
-      for(let i=0;i<n;i++) spawnStarParticle();
-    }, 260);
-
-    /* ===== ohňostroj + flip + přechod ===== */
-    const fxLayer = document.getElementById("fxLayer");
-    const btn = document.getElementById("continueBtn");
-    const card3d = document.getElementById("card3d");
-
-    function burst(x, y, count=26){
       for(let i=0;i<count;i++){
-        const s = document.createElement("div");
-        s.className = "spark";
-        s.style.left = x + "px";
-        s.style.top  = y + "px";
+        const el = document.createElement("div");
+        const type = types[Math.floor(Math.random() * types.length)];
+        el.className = "star " + type;
 
-        const angle = Math.random() * Math.PI * 2;
-        const dist  = 60 + Math.random() * 160; /* trochu širší */
-        s.style.setProperty("--dx", (Math.cos(angle) * dist) + "px");
-        s.style.setProperty("--dy", (Math.sin(angle) * dist) + "px");
+        const size =
+          type === "cross"
+            ? (6 + Math.random()*10)      // cross je “ikonka”, ať je vidět
+            : (2 + Math.random()*5);      // tečky/diamant menší
 
-        if (Math.random() < 0.35) s.style.background = "rgba(106,92,255,0.95)";
-        if (Math.random() < 0.20) s.style.background = "rgba(215,184,95,0.95)";
+        const dur = 9 + Math.random() * 12;               // 9–21s
+        const delay = (-Math.random() * dur);             // ať už běží
+        const drift = (-40 + Math.random() * 80);         // -40..+40 px
 
-        fxLayer.appendChild(s);
-        setTimeout(()=> s.remove(), 1500);
+        el.style.setProperty("--x", (Math.random()*100) + "vw");
+        el.style.setProperty("--s", size + "px");
+        el.style.setProperty("--d", dur + "s");
+        el.style.setProperty("--delay", delay + "s");
+        el.style.setProperty("--drift", drift + "px");
+
+        starsLayer.appendChild(el);
       }
     }
 
-    function fireworks(durationMs=3000){
-      const start = Date.now();
-      const timer = setInterval(() => {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        const x = w * (0.2 + Math.random()*0.6);
-        const y = h * (0.2 + Math.random()*0.5);
-        burst(x, y, 26 + Math.floor(Math.random()*18));
-        if (Date.now() - start > durationMs){
-          clearInterval(timer);
-        }
-      }, 280); /* pomalejší tempo */
+    createStarfield();
+    window.addEventListener("resize", () => createStarfield());
+
+    /* ===== upload + posun + zoom ===== */
+    const photoCard = document.getElementById("photoCard");
+    const input = document.getElementById("photoInput");
+    const preview = document.getElementById("preview");
+    const uploadLabel = document.getElementById("uploadLabel");
+
+    photoCard.addEventListener("click", () => {
+      if (preview.style.display === "block") return;
+      input.click();
+    });
+
+    input.addEventListener("change", () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.style.display = "block";
+      uploadLabel.style.display = "none";
+
+      currentX = 0; currentY = 0; scale = 1;
+      applyTransform();
+    });
+
+    let dragging = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+    let scale = 1;
+
+    function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+    function getPanLimits(){
+      const rect = photoCard.getBoundingClientRect();
+      const imgW = rect.width * 1.40 * scale;
+      const imgH = rect.height * 1.40 * scale;
+      const maxX = Math.max(0, (imgW - rect.width) / 2);
+      const maxY = Math.max(0, (imgH - rect.height) / 2);
+      return { maxX, maxY };
     }
 
-    btn.addEventListener("click", () => {
-      btn.disabled = true;
+    function applyTransform(){
+      const lim = getPanLimits();
+      currentX = clamp(currentX, -lim.maxX, lim.maxX);
+      currentY = clamp(currentY, -lim.maxY, lim.maxY);
+      preview.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+    }
 
-      fireworks(3000);
+    preview.addEventListener("dragstart", (e) => e.preventDefault());
 
-      // po 3s flip
-      setTimeout(() => {
-        card3d.classList.add("flip");
-      }, 3050);
-
-      // a po flipu přejdi na photo.html
-      setTimeout(() => {
-        window.location.href = "photo.html";
-      }, 3050 + 950);
+    preview.addEventListener("pointerdown", (e) => {
+      if (preview.style.display !== "block") return;
+      dragging = true;
+      preview.style.cursor = "grabbing";
+      preview.setPointerCapture(e.pointerId);
+      startX = e.clientX - currentX;
+      startY = e.clientY - currentY;
+      e.preventDefault();
     });
-  </script>
 
+    preview.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      currentX = e.clientX - startX;
+      currentY = e.clientY - startY;
+      applyTransform();
+      e.preventDefault();
+    });
+
+    preview.addEventListener("pointerup", () => {
+      dragging = false;
+      preview.style.cursor = "grab";
+    });
+
+    preview.addEventListener("pointercancel", () => {
+      dragging = false;
+      preview.style.cursor = "grab";
+    });
+
+    photoCard.addEventListener("wheel", (e) => {
+      if (preview.style.display !== "block") return;
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY) * -0.08;
+      scale = clamp(scale + delta, 1, 2.6);
+      applyTransform();
+    }, { passive:false });
+  </script>
 </body>
 </html>
