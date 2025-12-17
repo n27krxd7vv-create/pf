@@ -322,7 +322,7 @@
       }
     }
 
-    function fireworks(durationMs=2000){
+    function fireworks(durationMs=3000){
       const start = Date.now();
       const timer = setInterval(() => {
         const w = window.innerWidth;
@@ -333,12 +333,12 @@
         if (Date.now() - start > durationMs){
           clearInterval(timer);
         }
-      }, 220);
+      }, 320);
     }
 
     btn.addEventListener("click", () => {
       btn.disabled = true;
-      fireworks(2000);
+      fireworks(3000);
 
       // po ~2 vteřinách na fotku
       setTimeout(() => {
