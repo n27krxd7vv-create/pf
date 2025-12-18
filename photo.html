@@ -11,14 +11,20 @@
 
   <style>
     :root{
-      /* pozadí (ponecháno jak máš v “správném” photo.html) */
+      /* pozadí */
       --bg1:#040818;
       --bg2:#081a4a;
       --bg3:#0b2c7a;
 
-      /* ZLATO z index.html */
+      /* “zlato” jako index */
       --gold1:#f7e6a3;
       --gold2:#d7b85f;
+
+      /* skleněná karta jako index-feeling */
+      --glass: rgba(5,10,26,0.45);
+      --stroke: rgba(247,230,163,0.22);
+
+      --muted: rgba(246,241,221,0.82);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -33,6 +39,7 @@
       font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow:hidden;
       position:relative;
+
       background:
         radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08), transparent 55%),
         radial-gradient(circle at 20% 10%, rgba(255,211,138,0.10), transparent 45%),
@@ -94,56 +101,71 @@
       100% { transform: translateY(-240vh) rotate(25deg); opacity: 0; }
     }
 
-    /* KARTA */
-    .card{
+    /* ===== JEDNA HLAVNÍ KARTA (tmavá) ===== */
+    .wrap{
       position:relative;
       z-index:2;
       width: min(980px, 94vw);
       height: min(520px, 62vw);
-      background: rgba(255,255,255,0.92);
       border-radius: 26px;
-      box-shadow:
-        0 30px 90px rgba(0,0,0,0.35),
-        0 0 0 1px rgba(255,255,255,0.18);
-      overflow:hidden;
+
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+
       display:flex;
-      justify-content:center;
+      flex-direction:column;
       align-items:center;
-      cursor:pointer;
-      animation: cardIn 0.7s ease-out forwards;
+      justify-content:center;
+      gap: 18px;
+      padding: 34px 18px;
+
+      overflow:hidden;
+      animation: wrapIn 0.7s ease-out forwards;
       transform: translateY(22px);
       opacity: 0;
     }
 
-    @keyframes cardIn{
+    @keyframes wrapIn{
       from{ opacity:0; transform: translateY(22px) scale(0.985); }
       to  { opacity:1; transform: translateY(0) scale(1); }
     }
 
-    /* PF NAD RÁMEČKEM (mimo bílý box) */
+    /* PF 2026 – nad bílým rámečkem, uprostřed */
     .photo-title{
-      position:absolute;
-      top: 22px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index:6;
-
       font-family:"Playfair Display","Times New Roman",serif;
       font-size: clamp(28px, 6vw, 36px);
       font-weight: 700;
       letter-spacing: 0.06em;
 
-      /* stejné “zlato” jako 2026 v indexu */
       color: var(--gold1);
       text-shadow: 0 10px 38px rgba(215,184,95,0.22);
-
+      user-select:none;
       pointer-events:none;
     }
 
-    /* input hidden */
+    /* ===== BÍLÝ RÁMEČEK NA FOTKU (uvnitř wrap) ===== */
+    .photoBox{
+      position:relative;
+      width: min(860px, 92%);
+      height: min(340px, 42vw);
+
+      background: rgba(255,255,255,0.92);
+      border-radius: 22px;
+      box-shadow:
+        0 20px 70px rgba(0,0,0,0.25),
+        0 0 0 1px rgba(255,255,255,0.20);
+      overflow:hidden;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
     #photoInput{ display:none; }
 
-    /* CTA uprostřed */
     .upload-box{
       padding: 12px 30px;
       border-radius: 999px;
@@ -158,14 +180,13 @@
       transition: all .18s ease;
     }
 
-    .card:hover .upload-box{
+    .photoBox:hover .upload-box{
       border-color: rgba(10, 25, 60, 0.36);
       color: rgba(10, 25, 60, 0.82);
       background: rgba(255,255,255,0.88);
       transform: translateY(-1px);
     }
 
-    /* fotka */
     #preview{
       position:absolute;
       inset:0;
@@ -189,17 +210,19 @@
     }
 
     @media (max-width: 520px){
-      .card{
+      .wrap{
         width: min(980px, 96vw);
         height: min(520px, 70vw);
         border-radius: 22px;
+        padding: 26px 14px;
+        gap: 14px;
+      }
+      .photoBox{
+        height: min(340px, 60vw);
       }
       .upload-box{
         font-size: 12px;
         padding: 12px 26px;
-      }
-      .photo-title{
-        top: 18px;
       }
     }
   </style>
@@ -208,16 +231,15 @@
 <body>
   <div id="starfield" aria-hidden="true"></div>
 
-  <main class="card" id="card" aria-label="nahrání fotky">
-    <input type="file" id="photoInput" accept="image/*">
-
-    <!-- TADY je PF 2026: nad rámečkem + zlaté jako index -->
+  <main class="wrap" aria-label="Foto PF 2026">
     <div class="photo-title">PF 2026</div>
 
-    <img id="preview" alt="Vybraná fotka" draggable="false">
-    <div class="photo-overlay"></div>
-
-    <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
+    <div class="photoBox" id="photoBox" aria-label="nahrání fotky">
+      <input type="file" id="photoInput" accept="image/*">
+      <img id="preview" alt="Vybraná fotka" draggable="false">
+      <div class="photo-overlay"></div>
+      <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
+    </div>
   </main>
 
   <script>
@@ -248,13 +270,13 @@
     createStars();
     window.addEventListener("resize", () => createStars());
 
-    // --- PHOTO UPLOAD + DRAG ---
-    const card = document.getElementById("card");
+    // --- PHOTO UPLOAD + DRAG + ZOOM ---
+    const photoBox = document.getElementById("photoBox");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
     const uploadLabel = document.getElementById("uploadLabel");
 
-    card.addEventListener("click", () => {
+    photoBox.addEventListener("click", () => {
       if (preview.style.display === "block") return;
       input.click();
     });
@@ -281,8 +303,8 @@
 
     function limits(){
       return {
-        x: card.offsetWidth * 0.28,
-        y: card.offsetHeight * 0.28
+        x: photoBox.offsetWidth * 0.28,
+        y: photoBox.offsetHeight * 0.28
       };
     }
 
@@ -323,7 +345,7 @@
       preview.style.cursor = "grab";
     });
 
-    card.addEventListener("wheel", (e) => {
+    photoBox.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
       e.preventDefault();
       const delta = Math.sign(e.deltaY) * -0.06;
