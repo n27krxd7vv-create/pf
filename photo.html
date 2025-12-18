@@ -11,15 +11,20 @@
 
   <style>
     :root{
+      /* držíme stejné “gold” jako v index.html */
+      --gold1:#f7e6a3;
+      --gold2:#d7b85f;
+
+      /* pozadí (ponecháno z tvého správného photo.html) */
       --bg1:#040818;
       --bg2:#081a4a;
       --bg3:#0b2c7a;
 
-      --gold1:#f7e6a3;
-      --gold2:#d7b85f;
+      /* rám (tmavý skleněný) */
+      --frame:rgba(5,10,26,0.45);
+      --stroke:rgba(247,230,163,0.22);
 
-      --glass: rgba(5,10,26,0.45);
-      --stroke: rgba(247,230,163,0.22);
+      --text: rgba(255,255,255,0.92);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -30,10 +35,11 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:16px;
+      padding:18px;
       font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow:hidden;
       position:relative;
+      color:var(--text);
 
       background:
         radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08), transparent 55%),
@@ -50,7 +56,6 @@
       pointer-events:none;
       z-index:0;
     }
-
     .star{
       position:absolute;
       left: var(--x);
@@ -63,20 +68,15 @@
       animation-delay: var(--delay);
       filter: drop-shadow(0 0 6px rgba(255,255,255,0.20));
     }
-
     .star.dot{
       border-radius:999px;
       background: rgba(255,255,255,0.85);
     }
-
     .star.diamond{
       background: rgba(255,255,255,0.80);
       transform: translateY(0) rotate(45deg);
     }
-
-    .star.cross{
-      background: transparent;
-    }
+    .star.cross{ background: transparent; }
     .star.cross::before,
     .star.cross::after{
       content:"";
@@ -96,60 +96,52 @@
       100% { transform: translateY(-240vh) rotate(25deg); opacity: 0; }
     }
 
-    /* ===== VĚTŠÍ “SKLENĚNÝ” RÁMEČEK (wrap) ===== */
-    .wrap{
-      position:relative;
-      z-index:2;
+    /* ===== VŽDY UPROSTŘED ===== */
+    .center{
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      z-index: 2;
+    }
 
-      /* ZVĚTŠENO */
-      width: min(1120px, 96vw);
-      height: min(680px, 84vh);
-
-      border-radius: 26px;
-      background: var(--glass);
-      border: 1px solid var(--stroke);
+    /* TMAVÝ RÁM (jako “card” vibe z indexu) */
+    .frame{
+      width:min(980px, 96vw);
+      max-height: min(720px, 86vh);
+      padding: 34px 18px 26px;
+      border-radius:26px;
+      background: var(--frame);
+      border:1px solid var(--stroke);
       backdrop-filter: blur(10px);
       box-shadow: 0 30px 90px rgba(0,0,0,0.35);
-
+      overflow:hidden;
       display:flex;
       flex-direction:column;
       align-items:center;
-      justify-content:center;
-
-      /* trochu víc prostoru uvnitř */
-      gap: 18px;
-      padding: 34px 20px;
-
-      overflow:hidden;
-      animation: wrapIn 0.7s ease-out forwards;
-      transform: translateY(22px);
-      opacity: 0;
+      gap:18px;
     }
 
-    @keyframes wrapIn{
-      from{ opacity:0; transform: translateY(22px) scale(0.985); }
-      to  { opacity:1; transform: translateY(0) scale(1); }
-    }
-
-    .photo-title{
+    /* NADPIS NAD FOTOBOXEM (NE UVNITŘ) */
+    .pfTitle{
       font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(28px, 6vw, 36px);
-      font-weight: 700;
-      letter-spacing: 0.06em;
-
+      font-size: clamp(28px, 6vw, 40px); /* velikost držíme “jako PF/Year vibe” */
+      font-weight:700;
+      letter-spacing:0.10em;
       color: var(--gold1);
-      text-shadow: 0 10px 38px rgba(215,184,95,0.22);
+      text-shadow: 0 10px 38px rgba(215,184,95,0.18);
+      text-align:center;
       user-select:none;
       pointer-events:none;
     }
 
-    /* ===== VĚTŠÍ BÍLÝ PROSTOR PRO FOTKU ===== */
+    /* FOTOBOX – UPRAVENÝ POMĚR (méně “panorama”), mobile-friendly */
     .photoBox{
       position:relative;
-
-      /* ZVĚTŠENO */
-      width: min(1040px, 96%);
-      height: min(460px, 56vh);
+      width: min(900px, 88%);
+      height: min(420px, 52vh);
+      margin: 0 auto;
 
       background: rgba(255,255,255,0.92);
       border-radius: 22px;
@@ -170,7 +162,7 @@
       padding: 12px 30px;
       border-radius: 999px;
       border: 2px dashed rgba(10, 25, 60, 0.22);
-      color: rgba(10, 25, 60, 0.65);
+      color: rgba(10, 25, 60, 0.70);
       font-size: 13px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -179,7 +171,6 @@
       z-index:5;
       transition: all .18s ease;
     }
-
     .photoBox:hover .upload-box{
       border-color: rgba(10, 25, 60, 0.36);
       color: rgba(10, 25, 60, 0.82);
@@ -187,11 +178,12 @@
       transform: translateY(-1px);
     }
 
+    /* fotka */
     #preview{
       position:absolute;
       inset:0;
-      width: 120%;
-      height: 120%;
+      width: 130%;
+      height: 130%;
       object-fit: cover;
       display:none;
       z-index:2;
@@ -209,24 +201,23 @@
       z-index:3;
     }
 
-    /* ===== MOBILE FRIENDLY (telefon) ===== */
+    /* mobil */
     @media (max-width: 520px){
-      body{ padding: 12px; }
-
-      .wrap{
-        width: 96vw;
-        height: 86vh;          /* ať se vejde i se Safari horní lištou */
+      .frame{
+        width:min(980px, 96vw);
+        padding: 26px 14px 18px;
         border-radius: 22px;
-        padding: 22px 12px;
-        gap: 12px;
+        gap:14px;
       }
-
+      .pfTitle{
+        font-size: clamp(26px, 9vw, 34px);
+        letter-spacing: 0.08em;
+      }
       .photoBox{
-        width: 96%;
-        height: 60vh;          /* větší fotoplocha na mobilu */
+        width: 92%;
+        height: 52vh;
         border-radius: 18px;
       }
-
       .upload-box{
         font-size: 12px;
         padding: 12px 26px;
@@ -238,19 +229,21 @@
 <body>
   <div id="starfield" aria-hidden="true"></div>
 
-  <main class="wrap" aria-label="Foto PF 2026">
-    <div class="photo-title">PF 2026</div>
+  <div class="center">
+    <main class="frame" aria-label="Foto PF 2026">
+      <div class="pfTitle">PF 2026</div>
 
-    <div class="photoBox" id="photoBox" aria-label="nahrání fotky">
-      <input type="file" id="photoInput" accept="image/*">
-      <img id="preview" alt="Vybraná fotka" draggable="false">
-      <div class="photo-overlay"></div>
-      <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
-    </div>
-  </main>
+      <div class="photoBox" id="photoBox" aria-label="Nahrát fotku">
+        <input type="file" id="photoInput" accept="image/*">
+        <img id="preview" alt="Vybraná fotka" draggable="false">
+        <div class="photo-overlay"></div>
+        <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
+      </div>
+    </main>
+  </div>
 
   <script>
-    // --- STARFIELD ---
+    /* ===== STARFIELD ===== */
     const starfield = document.getElementById("starfield");
 
     function createStars(count = 46){
@@ -261,9 +254,9 @@
         const type = types[Math.floor(Math.random()*types.length)];
         s.className = `star ${type}`;
 
-        const size = (type === "cross") ? (2 + Math.random()*3) : (1.5 + Math.random()*3.5);
-        const dur  = 10 + Math.random()*12;
-        const delay = (-Math.random()*dur) + "s";
+        const size  = (type === "cross") ? (2 + Math.random()*3) : (1.5 + Math.random()*3.5);
+        const dur   = 10 + Math.random()*12;        // 10–22s
+        const delay = (-Math.random()*dur) + "s";   // hned běží
 
         s.style.setProperty("--x", (Math.random()*100) + "vw");
         s.style.setProperty("--s", size + "px");
@@ -273,11 +266,10 @@
         starfield.appendChild(s);
       }
     }
-
     createStars();
     window.addEventListener("resize", () => createStars());
 
-    // --- PHOTO UPLOAD + DRAG + ZOOM ---
+    /* ===== UPLOAD + DRAG + ZOOM ===== */
     const photoBox = document.getElementById("photoBox");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
@@ -308,14 +300,22 @@
 
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
-    function limits(){
-      return {
-        x: photoBox.offsetWidth * 0.28,
-        y: photoBox.offsetHeight * 0.28
-      };
+    function getPanLimits(){
+      const rect = photoBox.getBoundingClientRect();
+      const baseW = rect.width * 1.30;
+      const baseH = rect.height * 1.30;
+      const imgW = baseW * scale;
+      const imgH = baseH * scale;
+
+      const maxX = Math.max(0, (imgW - rect.width) / 2);
+      const maxY = Math.max(0, (imgH - rect.height) / 2);
+      return { maxX, maxY };
     }
 
     function applyTransform(){
+      const lim = getPanLimits();
+      currentX = clamp(currentX, -lim.maxX, lim.maxX);
+      currentY = clamp(currentY, -lim.maxY, lim.maxY);
       preview.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
     }
 
@@ -333,24 +333,18 @@
 
     preview.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-
-      const lim = limits();
-      currentX = clamp(e.clientX - startX, -lim.x, lim.x);
-      currentY = clamp(e.clientY - startY, -lim.y, lim.y);
-
+      currentX = e.clientX - startX;
+      currentY = e.clientY - startY;
       applyTransform();
       e.preventDefault();
     });
 
-    preview.addEventListener("pointerup", () => {
+    function stopDrag(){
       dragging = false;
       preview.style.cursor = "grab";
-    });
-
-    preview.addEventListener("pointercancel", () => {
-      dragging = false;
-      preview.style.cursor = "grab";
-    });
+    }
+    preview.addEventListener("pointerup", stopDrag);
+    preview.addEventListener("pointercancel", stopDrag);
 
     photoBox.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
