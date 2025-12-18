@@ -11,15 +11,14 @@
 
   <style>
     :root{
-      --bg1:#040818;           /* kosmická tma */
-      --bg2:#081a4a;           /* kosmická modř */
-      --bg3:#0b2c7a;           /* hlubší modř */
-      --card:#ffffff;
-      --card-border: rgba(255,255,255,0.20);
-      --text: rgba(255,255,255,0.92);
+      /* pozadí (ponecháno jak máš v “správném” photo.html) */
+      --bg1:#040818;
+      --bg2:#081a4a;
+      --bg3:#0b2c7a;
 
-      --accent: #ffd38a;       /* zlatavý nádech */
-      --accent-soft: rgba(255,211,138,0.55);
+      /* ZLATO z index.html */
+      --gold1:#f7e6a3;
+      --gold2:#d7b85f;
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -40,23 +39,6 @@
         radial-gradient(circle at 70% 70%, rgba(120,170,255,0.10), transparent 55%),
         linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
     }
-    .photo-title{
-  position:absolute;
-  top:22px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:6;
-
-  font-family:"Playfair Display","Times New Roman",serif;
-  font-size:clamp(28px,6vw,36px);
-  font-weight:700;
-  letter-spacing:0.06em;
-
-  color:#d6d9ff; /* jemná světlá kosmická */
-  text-shadow:0 2px 14px rgba(0,0,0,0.35);
-
-  pointer-events:none; /* aby nepřekážel dragování */
-}
 
     /* STARFIELD */
     #starfield{
@@ -80,19 +62,16 @@
       filter: drop-shadow(0 0 6px rgba(255,255,255,0.20));
     }
 
-    /* tečka */
     .star.dot{
       border-radius:999px;
       background: rgba(255,255,255,0.85);
     }
 
-    /* diamant */
     .star.diamond{
       background: rgba(255,255,255,0.80);
       transform: translateY(0) rotate(45deg);
     }
 
-    /* křížek (hvězdička) */
     .star.cross{
       background: transparent;
     }
@@ -115,7 +94,7 @@
       100% { transform: translateY(-240vh) rotate(25deg); opacity: 0; }
     }
 
-    /* karta */
+    /* KARTA */
     .card{
       position:relative;
       z-index:2;
@@ -139,6 +118,26 @@
     @keyframes cardIn{
       from{ opacity:0; transform: translateY(22px) scale(0.985); }
       to  { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* PF NAD RÁMEČKEM (mimo bílý box) */
+    .photo-title{
+      position:absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index:6;
+
+      font-family:"Playfair Display","Times New Roman",serif;
+      font-size: clamp(28px, 6vw, 36px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+
+      /* stejné “zlato” jako 2026 v indexu */
+      color: var(--gold1);
+      text-shadow: 0 10px 38px rgba(215,184,95,0.22);
+
+      pointer-events:none;
     }
 
     /* input hidden */
@@ -166,7 +165,7 @@
       transform: translateY(-1px);
     }
 
-    /* fotka (posun/zoom nechávám tak jak máš) */
+    /* fotka */
     #preview{
       position:absolute;
       inset:0;
@@ -181,7 +180,6 @@
       transform: translate(0px,0px) scale(1);
     }
 
-    /* jemný glow přes fotku */
     .photo-overlay{
       position:absolute;
       inset:0;
@@ -190,7 +188,6 @@
       z-index:3;
     }
 
-    /* (volitelné) mobilní poměry */
     @media (max-width: 520px){
       .card{
         width: min(980px, 96vw);
@@ -201,16 +198,20 @@
         font-size: 12px;
         padding: 12px 26px;
       }
+      .photo-title{
+        top: 18px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- stejné pozadí / hvězdičky jako index -->
   <div id="starfield" aria-hidden="true"></div>
 
   <main class="card" id="card" aria-label="nahrání fotky">
     <input type="file" id="photoInput" accept="image/*">
+
+    <!-- TADY je PF 2026: nad rámečkem + zlaté jako index -->
     <div class="photo-title">PF 2026</div>
 
     <img id="preview" alt="Vybraná fotka" draggable="false">
@@ -220,28 +221,26 @@
   </main>
 
   <script>
-    // --- STARFIELD (stejná logika si patří i do index.html) ---
+    // --- STARFIELD ---
     const starfield = document.getElementById("starfield");
 
     function createStars(count = 46){
       starfield.innerHTML = "";
-      const types = ["dot","dot","dot","diamond","cross"]; // víc teček, pár hvězdiček
+      const types = ["dot","dot","dot","diamond","cross"];
       for(let i=0;i<count;i++){
         const s = document.createElement("div");
         const type = types[Math.floor(Math.random()*types.length)];
         s.className = `star ${type}`;
 
         const size = (type === "cross") ? (2 + Math.random()*3) : (1.5 + Math.random()*3.5);
-        const dur  = 10 + Math.random()*12;     // 10–22s
-        const delay = (-Math.random()*dur) + "s"; // hned běží
+        const dur  = 10 + Math.random()*12;
+        const delay = (-Math.random()*dur) + "s";
 
         s.style.setProperty("--x", (Math.random()*100) + "vw");
         s.style.setProperty("--s", size + "px");
         s.style.setProperty("--d", dur + "s");
         s.style.setProperty("--delay", delay);
 
-        // lehce různá jasnost
-        s.style.opacity = 0;
         starfield.appendChild(s);
       }
     }
@@ -273,7 +272,6 @@
       applyTransform();
     });
 
-    // drag
     let dragging = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
@@ -282,7 +280,6 @@
     function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
     function limits(){
-      // dovolíme větší posun i dolů/nahoru (kvůli tvému problému)
       return {
         x: card.offsetWidth * 0.28,
         y: card.offsetHeight * 0.28
@@ -326,7 +323,6 @@
       preview.style.cursor = "grab";
     });
 
-    // (bonus) zoom kolečkem na desktopu — když nebudeš chtít, smaž
     card.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
       e.preventDefault();
