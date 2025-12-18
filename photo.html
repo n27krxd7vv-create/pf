@@ -40,6 +40,23 @@
         radial-gradient(circle at 70% 70%, rgba(120,170,255,0.10), transparent 55%),
         linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
     }
+    .photo-title{
+  position:absolute;
+  top:22px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+
+  font-family:"Playfair Display","Times New Roman",serif;
+  font-size:clamp(28px,6vw,36px);
+  font-weight:700;
+  letter-spacing:0.06em;
+
+  color:#d6d9ff; /* jemná světlá kosmická */
+  text-shadow:0 2px 14px rgba(0,0,0,0.35);
+
+  pointer-events:none; /* aby nepřekážel dragování */
+}
 
     /* STARFIELD */
     #starfield{
@@ -194,6 +211,7 @@
 
   <main class="card" id="card" aria-label="nahrání fotky">
     <input type="file" id="photoInput" accept="image/*">
+    <div class="photo-title">PF 2026</div>
 
     <img id="preview" alt="Vybraná fotka" draggable="false">
     <div class="photo-overlay"></div>
