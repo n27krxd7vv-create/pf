@@ -11,7 +11,7 @@
 
   <style>
     :root{
-      /* 1:1 z HTML.index */
+      /* stejné ladění jako index */
       --bg0:#030716;
       --bg1:#06102c;
       --bg2:#0a1f4d;
@@ -40,7 +40,6 @@
       padding:18px;
       position:relative;
 
-      /* 1:1 z HTML.index */
       background:
         radial-gradient(900px 600px at 50% 35%, rgba(106,92,255,0.20), transparent 60%),
         radial-gradient(1100px 700px at 35% 75%, rgba(215,184,95,0.10), transparent 60%),
@@ -48,7 +47,7 @@
         linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
     }
 
-    /* ===== hvězdičky (1:1 z HTML.index) ===== */
+    /* hvězdičky – stejné jako index */
     #starsLayer{
       position:fixed;
       inset:0;
@@ -89,11 +88,12 @@
       100% { transform:translateY(calc(-130vh - var(--y))) rotate(30deg); opacity:0; }
     }
 
-    /* ===== rámeček (glass) kolem fotoboxu ===== */
+    /* === wrapper (stejný feeling jako index) + enter/exit === */
     .wrap{
       width:min(980px, 96vw);
+      text-align:center;
       z-index:2;
-      padding:32px 18px 26px;
+      padding: 34px 18px 26px;
       border-radius:26px;
       background: var(--card);
       border:1px solid var(--stroke);
@@ -101,27 +101,43 @@
       box-shadow: 0 30px 90px rgba(0,0,0,0.35);
       position:relative;
       overflow:hidden;
-      text-align:center;
+
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      transition: opacity 650ms ease, transform 650ms ease, filter 650ms ease;
+      will-change: opacity, transform, filter;
     }
 
-    /* Nadpis NAD fotoboxem, barva 1:1 jako "2026" z indexu */
+    /* start stav pro vstup */
+    .wrap.enter{
+      opacity:0;
+      transform: translateY(10px) scale(0.985);
+      filter: blur(6px);
+    }
+
+    /* odchod */
+    .wrap.exit{
+      opacity:0;
+      transform: translateY(10px) scale(0.985);
+      filter: blur(6px);
+    }
+
     .pfTitle{
       font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(28px, 5.2vw, 40px);
+      font-size: clamp(58px, 10vw, 110px);
       letter-spacing:0.12em;
       color: var(--gold1);
       text-shadow: 0 10px 38px rgba(215,184,95,0.22);
-      margin: 2px 0 18px;
+      margin-bottom: 18px;
     }
 
-    /* ===== fotobox (méně obdélník: užší a vyšší poměr) ===== */
+    /* fotobox – víc „na fotku“ (méně obdélník) */
     .photoCard{
       position: relative;
-      width: min(760px, 90%);          /* zmenšeno z boků */
-      aspect-ratio: 4 / 3;             /* méně široké než dřív */
-      max-height: min(520px, 62vh);    /* aby se vešlo na notebook i mobil */
-      margin: 0 auto;
-
+      width: min(820px, 92%);
+      height: min(420px, 86vw); /* mobil: skoro čtverec, desktop: vyšší */
+      margin: 0 auto 18px;
       background: rgba(255,255,255,0.92);
       border-radius: 22px;
       box-shadow:
@@ -132,11 +148,6 @@
       align-items:center;
       justify-content:center;
       cursor:pointer;
-    }
-
-    /* fallback kdyby někde aspect-ratio zlobilo */
-    @supports not (aspect-ratio: 1 / 1){
-      .photoCard{ height: min(460px, 60vw); }
     }
 
     #photoInput{ display:none; }
@@ -164,8 +175,8 @@
     #preview{
       position:absolute;
       inset:0;
-      width: 120%;
-      height: 120%;
+      width: 125%;
+      height: 125%;
       object-fit: cover;
       display:none;
       z-index:2;
@@ -183,14 +194,42 @@
       z-index:3;
     }
 
-    /* mobil */
+    /* tlačítko jako index */
+    .btn{
+      margin-top: 6px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(247,230,163,0.55);
+      background: rgba(215,184,95,0.18);
+      color: rgba(247,230,163,0.95);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, opacity .2s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(215,184,95,0.28); }
+    .btn:active{ transform: translateY(1px) scale(0.99); }
+    .btn[disabled]{ opacity:0.55; cursor:not-allowed; transform:none !important; }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing:0.22em;
+      text-transform: uppercase;
+      color: rgba(247,230,163,0.72);
+    }
+
     @media (max-width: 520px){
-      body{ padding:14px; }
-      .wrap{ padding:24px 14px 18px; border-radius:22px; }
-      .pfTitle{ margin-bottom:14px; font-size: clamp(26px, 8vw, 34px); }
+      body{ padding:16px; }
+      .wrap{ padding: 28px 14px 20px; }
       .photoCard{
-        width: min(760px, 92%);
-        max-height: min(520px, 70vh);
+        width: min(860px, 94%);
+        height: min(420px, 92vw);
         border-radius: 20px;
       }
       .upload-box{ font-size: 12px; padding: 12px 26px; }
@@ -199,23 +238,28 @@
 </head>
 
 <body>
+
   <div id="starsLayer" aria-hidden="true"></div>
 
-  <main class="wrap" aria-label="Foto PF 2026">
-    <div class="pfTitle">PF 2026</div>
+  <main class="wrap enter" id="wrap" aria-label="Foto PF 2026">
+    <div class="pfTitle">2026</div>
 
     <div class="photoCard" id="photoCard" aria-label="Nahrát fotku">
       <input type="file" id="photoInput" accept="image/*">
+
       <img id="preview" alt="Vybraná fotka" draggable="false">
       <div class="photo-overlay"></div>
+
       <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
     </div>
+
+    <button class="btn" id="continueBtn">POKRAČOVAT ✨</button>
+    <div class="hint">Fotku můžeš posunout tažením</div>
   </main>
 
   <script>
-    /* ===== hvězdičky (1:1 z HTML.index) ===== */
+    /* ===== hvězdičky (jako index) ===== */
     const starsLayer = document.getElementById("starsLayer");
-
     function spawnStarParticle(){
       const el = document.createElement("div");
       const isPlus = Math.random() < 0.35;
@@ -244,13 +288,19 @@
       const ms = (parseFloat(dur) * 1000) + 150;
       setTimeout(()=> el.remove(), ms);
     }
-
     setInterval(() => {
       const n = 1 + Math.floor(Math.random()*2);
       for(let i=0;i<n;i++) spawnStarParticle();
     }, 260);
 
-    /* ===== upload + posun + zoom ===== */
+    /* ===== vstupní animace (obráceně než exit v indexu) ===== */
+    const wrap = document.getElementById("wrap");
+    requestAnimationFrame(() => {
+      // necháme 1 frame a pak sundáme enter -> plynulý nástup
+      wrap.classList.remove("enter");
+    });
+
+    /* ===== upload + drag + zoom ===== */
     const photoCard = document.getElementById("photoCard");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
@@ -283,15 +333,12 @@
 
     function limits(){
       return {
-        x: photoCard.offsetWidth * 0.28,
-        y: photoCard.offsetHeight * 0.28
+        x: photoCard.offsetWidth * 0.30,
+        y: photoCard.offsetHeight * 0.30
       };
     }
 
     function applyTransform(){
-      const lim = limits();
-      currentX = clamp(currentX, -lim.x, lim.x);
-      currentY = clamp(currentY, -lim.y, lim.y);
       preview.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
     }
 
@@ -309,9 +356,9 @@
 
     preview.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-
-      currentX = e.clientX - startX;
-      currentY = e.clientY - startY;
+      const lim = limits();
+      currentX = clamp(e.clientX - startX, -lim.x, lim.x);
+      currentY = clamp(e.clientY - startY, -lim.y, lim.y);
       applyTransform();
       e.preventDefault();
     });
@@ -333,6 +380,24 @@
       scale = clamp(scale + delta, 1, 2.2);
       applyTransform();
     }, { passive:false });
+
+    /* ===== pokračovat -> exit animace -> přechod ===== */
+    const btn = document.getElementById("continueBtn");
+
+    btn.addEventListener("click", () => {
+      btn.disabled = true;
+
+      // volitelně: pokud chceš vyžadovat fotku, odkomentuj:
+      // if (preview.style.display !== "block") { btn.disabled = false; return; }
+
+      wrap.classList.add("exit");
+
+      // po zmizení přejdi na další stránku
+      setTimeout(() => {
+        window.location.href = "final.html"; // <- změň si název cílové stránky
+      }, 650);
+    });
   </script>
+
 </body>
 </html>
