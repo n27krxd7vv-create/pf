@@ -310,6 +310,44 @@
       if (preview.style.display === "block") return;
       input.click();
     });
+    const MAX_UPLOAD_MB = 12;   // kolik může user vybrat z telefonu (před kompresí)
+const MAX_SIDE = 1600;      // finální delší strana fotky
+const JPEG_QUALITY = 0.82;  // kvalita (0–1)
+
+async function compressImageToJpeg(file) {
+  const mb = file.size / (1024 * 1024);
+  if (mb > MAX_UPLOAD_MB) {
+    throw new Error(`Fotka je moc velká (${mb.toFixed(1)} MB). Limit je ${MAX_UPLOAD_MB} MB.`);
+  }
+
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new Error("Fotku se nepovedlo načíst. Zkus prosím nahrát JPG (některé telefony dávají HEIC).");
+  }
+
+  const srcW = bitmap.width;
+  const srcH = bitmap.height;
+  const scale = Math.min(1, MAX_SIDE / Math.max(srcW, srcH));
+  const dstW = Math.round(srcW * scale);
+  const dstH = Math.round(srcH * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = dstW;
+  canvas.height = dstH;
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.drawImage(bitmap, 0, 0, dstW, dstH);
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob((b) => resolve(b), "image/jpeg", JPEG_QUALITY);
+  });
+
+  if (!blob) throw new Error("Nepovedlo se vytvořit JPG.");
+
+  return blob; // tohle budeme uploadovat na Supabase
+}
 
     input.addEventListener("change", () => {
       const file = input.files && input.files[0];
