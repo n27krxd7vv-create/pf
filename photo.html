@@ -259,6 +259,17 @@
   </main>
 
   <script>
+    
+  const SUPABASE_URL = "https://vnbrygkereootqpezbgo.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_mSdYagcdgEchNYi7BHbX2g_gQ7_S-Kh";
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const params = new URLSearchParams(location.search);
+  const token = params.get("t") || crypto.randomUUID();
+
+  // ... zbytek tvého kódu pokračuje tady
+    
     /* ===== hvězdičky (jako index) ===== */
     const starsLayer = document.getElementById("starsLayer");
     function spawnStarParticle(){
