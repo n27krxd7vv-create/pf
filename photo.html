@@ -11,19 +11,12 @@
 
   <style>
     :root{
-      /* stejné ladění jako index */
-      --bg0:#030716;
-      --bg1:#06102c;
-      --bg2:#0a1f4d;
-      --nebula:#6a5cff;
+      --bg1:#040818;           /* kosmická tma */
+      --bg2:#081a4a;           /* kosmická modř */
+      --bg3:#0b2c7a;           /* hlubší modř */
 
-      --gold1:#f7e6a3;
-      --gold2:#d7b85f;
-
-      --text:#f6f1dd;
-      --muted:rgba(246,241,221,0.82);
-      --card:rgba(5,10,26,0.45);
-      --stroke:rgba(247,230,163,0.22);
+      --accent: #ffd38a;       /* zlatavý nádech */
+      --accent-soft: rgba(255,211,138,0.55);
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; }
@@ -31,123 +24,120 @@
     body{
       min-height:100vh;
       width:100vw;
-      overflow:hidden;
-      font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color:var(--text);
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:18px;
+      padding:16px;
+      font-family:"Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow:hidden;
       position:relative;
-
       background:
-        radial-gradient(900px 600px at 50% 35%, rgba(106,92,255,0.20), transparent 60%),
-        radial-gradient(1100px 700px at 35% 75%, rgba(215,184,95,0.10), transparent 60%),
-        radial-gradient(800px 550px at 70% 65%, rgba(10,31,77,0.55), transparent 65%),
-        linear-gradient(180deg, var(--bg2), var(--bg1) 45%, var(--bg0));
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08), transparent 55%),
+        radial-gradient(circle at 20% 10%, rgba(255,211,138,0.10), transparent 45%),
+        radial-gradient(circle at 70% 70%, rgba(120,170,255,0.10), transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2) 55%, var(--bg3));
     }
 
-    /* hvězdičky – stejné jako index */
-    #starsLayer{
+    /* NADPIS PF 2026 – nahoře nad rámečkem */
+    .photo-title{
+      position:absolute;
+      top:22px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:6;
+
+      font-family:"Playfair Display","Times New Roman",serif;
+      font-size:clamp(28px,6vw,36px);
+      font-weight:700;
+      letter-spacing:0.12em;
+
+      /* barva jako "2026" z indexu (gold-ish) */
+      color:#f7e6a3;
+      text-shadow: 0 10px 38px rgba(215,184,95,0.22);
+
+      pointer-events:none;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    /* STARFIELD */
+    #starfield{
       position:fixed;
       inset:0;
+      overflow:hidden;
       pointer-events:none;
-      overflow:hidden;
-      z-index:1;
+      z-index:0;
     }
-    .starParticle{
+
+    .star{
       position:absolute;
-      left:var(--x);
-      top:110vh;
-      width:var(--s);
-      height:var(--s);
+      left: var(--x);
+      top: 110vh;
+      width: var(--s);
+      height: var(--s);
+      opacity: 0;
+      transform: translateY(0) rotate(0deg);
+      animation: rise var(--d) linear infinite;
+      animation-delay: var(--delay);
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.20));
+    }
+
+    .star.dot{
       border-radius:999px;
-      background:linear-gradient(180deg, rgba(247,230,163,0.95), rgba(215,184,95,0.85));
-      box-shadow:0 0 14px rgba(215,184,95,0.22);
-      opacity:0;
-      animation: rise var(--d) linear forwards;
+      background: rgba(255,255,255,0.85);
     }
-    .plusParticle{
+
+    .star.diamond{
+      background: rgba(255,255,255,0.80);
+      transform: translateY(0) rotate(45deg);
+    }
+
+    .star.cross{
+      background: transparent;
+    }
+    .star.cross::before,
+    .star.cross::after{
+      content:"";
       position:absolute;
-      left:var(--x);
-      top:110vh;
-      color:rgba(247,230,163,0.85);
-      font-size:var(--fs);
-      opacity:0;
-      text-shadow:0 0 14px rgba(215,184,95,0.18);
-      animation: risePlus var(--d) linear forwards;
+      inset:0;
+      margin:auto;
+      background: rgba(255,255,255,0.85);
+      border-radius: 2px;
     }
+    .star.cross::before{ width: 100%; height: 2px; }
+    .star.cross::after{ width: 2px; height: 100%; }
+
     @keyframes rise{
-      0%   { transform:translateY(0) scale(0.95); opacity:0; }
-      10%  { opacity:0.9; }
-      100% { transform:translateY(calc(-130vh - var(--y))) scale(1.05); opacity:0; }
-    }
-    @keyframes risePlus{
-      0%   { transform:translateY(0) rotate(0deg); opacity:0; }
-      12%  { opacity:0.9; }
-      100% { transform:translateY(calc(-130vh - var(--y))) rotate(30deg); opacity:0; }
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.9; }
+      70%  { opacity: 0.55; }
+      100% { transform: translateY(-240vh) rotate(25deg); opacity: 0; }
     }
 
-    /* === wrapper (stejný feeling jako index) + enter/exit === */
-    .wrap{
-      width:min(980px, 96vw);
-      text-align:center;
-      z-index:2;
-      padding: 34px 18px 26px;
-      border-radius:26px;
-      background: var(--card);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+    /* karta */
+    .card{
       position:relative;
-      overflow:hidden;
-
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-      transition: opacity 650ms ease, transform 650ms ease, filter 650ms ease;
-      will-change: opacity, transform, filter;
-    }
-
-    /* start stav pro vstup */
-    .wrap.enter{
-      opacity:0;
-      transform: translateY(10px) scale(0.985);
-      filter: blur(6px);
-    }
-
-    /* odchod */
-    .wrap.exit{
-      opacity:0;
-      transform: translateY(10px) scale(0.985);
-      filter: blur(6px);
-    }
-
-    .pfTitle{
-      font-family:"Playfair Display","Times New Roman",serif;
-      font-size: clamp(58px, 10vw, 110px);
-      letter-spacing:0.12em;
-      color: var(--gold1);
-      text-shadow: 0 10px 38px rgba(215,184,95,0.22);
-      margin-bottom: 18px;
-    }
-
-    /* fotobox – víc „na fotku“ (méně obdélník) */
-    .photoCard{
-      position: relative;
-      width: min(820px, 92%);
-      height: min(420px, 86vw); /* mobil: skoro čtverec, desktop: vyšší */
-      margin: 0 auto 18px;
+      z-index:2;
+      width: min(980px, 94vw);
+      height: min(560px, 72vw); /* trochu méně “obdélník” – víc použitelné pro fotku */
       background: rgba(255,255,255,0.92);
-      border-radius: 22px;
+      border-radius: 26px;
       box-shadow:
-        0 20px 70px rgba(0,0,0,0.25),
-        0 0 0 1px rgba(255,255,255,0.20);
+        0 30px 90px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(255,255,255,0.18);
       overflow:hidden;
       display:flex;
-      align-items:center;
       justify-content:center;
+      align-items:center;
       cursor:pointer;
+      animation: cardIn 0.7s ease-out forwards;
+      transform: translateY(22px);
+      opacity: 0;
+    }
+
+    @keyframes cardIn{
+      from{ opacity:0; transform: translateY(22px) scale(0.985); }
+      to  { opacity:1; transform: translateY(0) scale(1); }
     }
 
     #photoInput{ display:none; }
@@ -156,7 +146,7 @@
       padding: 12px 30px;
       border-radius: 999px;
       border: 2px dashed rgba(10, 25, 60, 0.22);
-      color: rgba(10, 25, 60, 0.70);
+      color: rgba(10, 25, 60, 0.65);
       font-size: 13px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -165,203 +155,146 @@
       z-index:5;
       transition: all .18s ease;
     }
-    .photoCard:hover .upload-box{
+
+    .card:hover .upload-box{
       border-color: rgba(10, 25, 60, 0.36);
       color: rgba(10, 25, 60, 0.82);
       background: rgba(255,255,255,0.88);
       transform: translateY(-1px);
     }
 
+    /* fotka */
     #preview{
       position:absolute;
       inset:0;
-      width: 125%;
-      height: 125%;
+      width: 120%;
+      height: 120%;
       object-fit: cover;
       display:none;
       z-index:2;
       cursor: grab;
       user-select:none;
-      touch-action:none;
+      touch-action:none; /* důležité pro mobil */
       transform: translate(0px,0px) scale(1);
     }
 
     .photo-overlay{
       position:absolute;
       inset:0;
-      background: radial-gradient(circle at 50% 20%, rgba(215,184,95,0.10), transparent 55%);
+      background: radial-gradient(circle at 50% 20%, rgba(255,211,138,0.10), transparent 55%);
       pointer-events:none;
       z-index:3;
     }
 
-    /* tlačítko jako index */
-    .btn{
-      margin-top: 6px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 12px 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(247,230,163,0.55);
-      background: rgba(215,184,95,0.18);
-      color: rgba(247,230,163,0.95);
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor:pointer;
-      transition: transform .15s ease, background .15s ease, opacity .2s ease;
-    }
-    .btn:hover{ transform: translateY(-1px); background: rgba(215,184,95,0.28); }
-    .btn:active{ transform: translateY(1px) scale(0.99); }
-    .btn[disabled]{ opacity:0.55; cursor:not-allowed; transform:none !important; }
-
-    .hint{
-      margin-top: 10px;
-      font-size: 12px;
-      letter-spacing:0.22em;
-      text-transform: uppercase;
-      color: rgba(247,230,163,0.72);
-    }
-
     @media (max-width: 520px){
-      body{ padding:16px; }
-      .wrap{ padding: 28px 14px 20px; }
-      .photoCard{
-        width: min(860px, 94%);
-        height: min(420px, 92vw);
-        border-radius: 20px;
+      .card{
+        width: min(980px, 96vw);
+        height: min(560px, 88vw);
+        border-radius: 22px;
       }
-      .upload-box{ font-size: 12px; padding: 12px 26px; }
+      .upload-box{
+        font-size: 12px;
+        padding: 12px 26px;
+      }
+      .photo-title{
+        top:16px;
+      }
     }
   </style>
 </head>
 
 <body>
+  <div id="starfield" aria-hidden="true"></div>
 
-  <div id="starsLayer" aria-hidden="true"></div>
+  <main class="card" id="card" aria-label="nahrání fotky">
+    <input type="file" id="photoInput" accept="image/*">
+    <div class="photo-title">PF 2026</div>
 
-  <main class="wrap enter" id="wrap" aria-label="Foto PF 2026">
-    <div class="pfTitle">2026</div>
+    <img id="preview" alt="Vybraná fotka" draggable="false">
+    <div class="photo-overlay"></div>
 
-    <div class="photoCard" id="photoCard" aria-label="Nahrát fotku">
-      <input type="file" id="photoInput" accept="image/*">
-
-      <img id="preview" alt="Vybraná fotka" draggable="false">
-      <div class="photo-overlay"></div>
-
-      <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
-    </div>
-
-    <button class="btn" id="continueBtn">POKRAČOVAT ✨</button>
-    <div class="hint">Fotku můžeš posunout tažením</div>
+    <div class="upload-box" id="uploadLabel">Vybrat fotku</div>
   </main>
 
   <script>
-    /* ===== hvězdičky (jako index) ===== */
-    const starsLayer = document.getElementById("starsLayer");
-    function spawnStarParticle(){
-      const el = document.createElement("div");
-      const isPlus = Math.random() < 0.35;
+    /* ===== STARFIELD ===== */
+    const starfield = document.getElementById("starfield");
 
-      const x = (Math.random()*100).toFixed(2) + "vw";
-      const size = (2 + Math.random()*4).toFixed(2) + "px";
-      const drift = (Math.random()*70).toFixed(0) + "px";
-      const dur = (7.5 + Math.random()*7.5).toFixed(2) + "s";
+    function createStars(count = 46){
+      starfield.innerHTML = "";
+      const types = ["dot","dot","dot","diamond","cross"];
+      for(let i=0;i<count;i++){
+        const s = document.createElement("div");
+        const type = types[Math.floor(Math.random()*types.length)];
+        s.className = `star ${type}`;
 
-      if(isPlus){
-        el.className = "plusParticle";
-        el.textContent = Math.random() < 0.5 ? "✦" : "✧";
-        el.style.setProperty("--x", x);
-        el.style.setProperty("--y", drift);
-        el.style.setProperty("--d", dur);
-        el.style.setProperty("--fs", (10 + Math.random()*14).toFixed(0) + "px");
-      } else {
-        el.className = "starParticle";
-        el.style.setProperty("--x", x);
-        el.style.setProperty("--y", drift);
-        el.style.setProperty("--d", dur);
-        el.style.setProperty("--s", size);
+        const size = (type === "cross") ? (2 + Math.random()*3) : (1.5 + Math.random()*3.5);
+        const dur  = 10 + Math.random()*12;
+        const delay = (-Math.random()*dur) + "s";
+
+        s.style.setProperty("--x", (Math.random()*100) + "vw");
+        s.style.setProperty("--s", size + "px");
+        s.style.setProperty("--d", dur + "s");
+        s.style.setProperty("--delay", delay);
+
+        starfield.appendChild(s);
+      }
+    }
+    createStars();
+    window.addEventListener("resize", () => createStars());
+
+    /* ===== KOMPRESNÍ FUNKCE (Varianta A) ===== */
+    const MAX_UPLOAD_MB = 12;   // kolik může user vybrat z telefonu (před kompresí)
+    const MAX_SIDE = 1600;      // finální delší strana fotky
+    const JPEG_QUALITY = 0.82;  // kvalita (0–1)
+
+    async function compressImageToJpeg(file) {
+      const mb = file.size / (1024 * 1024);
+      if (mb > MAX_UPLOAD_MB) {
+        throw new Error(`Fotka je moc velká (${mb.toFixed(1)} MB). Limit je ${MAX_UPLOAD_MB} MB.`);
       }
 
-      starsLayer.appendChild(el);
-      const ms = (parseFloat(dur) * 1000) + 150;
-      setTimeout(()=> el.remove(), ms);
+      let bitmap;
+      try {
+        bitmap = await createImageBitmap(file);
+      } catch {
+        throw new Error("Fotku se nepovedlo načíst. Zkus prosím nahrát JPG (některé telefony dávají HEIC).");
+      }
+
+      const srcW = bitmap.width;
+      const srcH = bitmap.height;
+      const scale = Math.min(1, MAX_SIDE / Math.max(srcW, srcH));
+      const dstW = Math.round(srcW * scale);
+      const dstH = Math.round(srcH * scale);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = dstW;
+      canvas.height = dstH;
+
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.drawImage(bitmap, 0, 0, dstW, dstH);
+
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob((b) => resolve(b), "image/jpeg", JPEG_QUALITY);
+      });
+
+      if (!blob) throw new Error("Nepovedlo se vytvořit JPG.");
+
+      return blob;
     }
-    setInterval(() => {
-      const n = 1 + Math.floor(Math.random()*2);
-      for(let i=0;i<n;i++) spawnStarParticle();
-    }, 260);
 
-    /* ===== vstupní animace (obráceně než exit v indexu) ===== */
-    const wrap = document.getElementById("wrap");
-    requestAnimationFrame(() => {
-      // necháme 1 frame a pak sundáme enter -> plynulý nástup
-      wrap.classList.remove("enter");
-    });
-
-    /* ===== upload + drag + zoom ===== */
-    const photoCard = document.getElementById("photoCard");
+    /* ===== PHOTO UPLOAD + DRAG + ZOOM ===== */
+    const card = document.getElementById("card");
     const input = document.getElementById("photoInput");
     const preview = document.getElementById("preview");
     const uploadLabel = document.getElementById("uploadLabel");
 
-    photoCard.addEventListener("click", () => {
+    card.addEventListener("click", () => {
       if (preview.style.display === "block") return;
       input.click();
     });
-    const MAX_UPLOAD_MB = 12;   // kolik může user vybrat z telefonu (před kompresí)
-const MAX_SIDE = 1600;      // finální delší strana fotky
-const JPEG_QUALITY = 0.82;  // kvalita (0–1)
 
-async function compressImageToJpeg(file) {
-  const mb = file.size / (1024 * 1024);
-  if (mb > MAX_UPLOAD_MB) {
-    throw new Error(`Fotka je moc velká (${mb.toFixed(1)} MB). Limit je ${MAX_UPLOAD_MB} MB.`);
-  }
-
-  let bitmap;
-  try {
-    bitmap = await createImageBitmap(file);
-  } catch {
-    throw new Error("Fotku se nepovedlo načíst. Zkus prosím nahrát JPG (některé telefony dávají HEIC).");
-  }
-
-  const srcW = bitmap.width;
-  const srcH = bitmap.height;
-  const scale = Math.min(1, MAX_SIDE / Math.max(srcW, srcH));
-  const dstW = Math.round(srcW * scale);
-  const dstH = Math.round(srcH * scale);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = dstW;
-  canvas.height = dstH;
-
-  const ctx = canvas.getContext("2d", { alpha: false });
-  ctx.drawImage(bitmap, 0, 0, dstW, dstH);
-
-  const blob = await new Promise((resolve) => {
-    canvas.toBlob((b) => resolve(b), "image/jpeg", JPEG_QUALITY);
-  });
-
-  if (!blob) throw new Error("Nepovedlo se vytvořit JPG.");
-
-  return blob; // tohle budeme uploadovat na Supabase
-}
-
-    input.addEventListener("change", () => {
-      const file = input.files && input.files[0];
-      if (!file) return;
-
-      const url = URL.createObjectURL(file);
-      preview.src = url;
-      preview.style.display = "block";
-      uploadLabel.style.display = "none";
-
-      currentX = 0; currentY = 0; scale = 1;
-      applyTransform();
-    });
-
+    // drag
     let dragging = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
@@ -371,8 +304,8 @@ async function compressImageToJpeg(file) {
 
     function limits(){
       return {
-        x: photoCard.offsetWidth * 0.30,
-        y: photoCard.offsetHeight * 0.30
+        x: card.offsetWidth * 0.28,
+        y: card.offsetHeight * 0.28
       };
     }
 
@@ -394,9 +327,11 @@ async function compressImageToJpeg(file) {
 
     preview.addEventListener("pointermove", (e) => {
       if (!dragging) return;
+
       const lim = limits();
       currentX = clamp(e.clientX - startX, -lim.x, lim.x);
       currentY = clamp(e.clientY - startY, -lim.y, lim.y);
+
       applyTransform();
       e.preventDefault();
     });
@@ -411,31 +346,42 @@ async function compressImageToJpeg(file) {
       preview.style.cursor = "grab";
     });
 
-    photoCard.addEventListener("wheel", (e) => {
+    // ✅ ZMĚNA: výběr fotky -> komprese -> preview (už je to “lehké”)
+    input.addEventListener("change", async () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      try {
+        const jpgBlob = await compressImageToJpeg(file);
+
+        const url = URL.createObjectURL(jpgBlob);
+        preview.src = url;
+        preview.style.display = "block";
+        uploadLabel.style.display = "none";
+
+        currentX = 0; currentY = 0; scale = 1;
+        applyTransform();
+
+        console.log(
+          "Original MB:", (file.size/1024/1024).toFixed(2),
+          "→ Compressed MB:", (jpgBlob.size/1024/1024).toFixed(2)
+        );
+
+        // TIP: až budeme napojovat Supabase, uploadovat budeme právě jpgBlob
+        // (ne původní file)
+      } catch (err) {
+        alert(err?.message || "Nepovedlo se zpracovat fotku.");
+      }
+    });
+
+    // zoom kolečkem na desktopu
+    card.addEventListener("wheel", (e) => {
       if (preview.style.display !== "block") return;
       e.preventDefault();
       const delta = Math.sign(e.deltaY) * -0.06;
       scale = clamp(scale + delta, 1, 2.2);
       applyTransform();
     }, { passive:false });
-
-    /* ===== pokračovat -> exit animace -> přechod ===== */
-    const btn = document.getElementById("continueBtn");
-
-    btn.addEventListener("click", () => {
-      btn.disabled = true;
-
-      // volitelně: pokud chceš vyžadovat fotku, odkomentuj:
-      // if (preview.style.display !== "block") { btn.disabled = false; return; }
-
-      wrap.classList.add("exit");
-
-      // po zmizení přejdi na další stránku
-      setTimeout(() => {
-        window.location.href = "final.html"; // <- změň si název cílové stránky
-      }, 650);
-    });
   </script>
-
 </body>
 </html>
