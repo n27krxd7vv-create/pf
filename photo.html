@@ -366,6 +366,7 @@ async function compressImageToJpeg(file) {
   const file = input.files && input.files[0];
   if (!file) return;
 
+  // preview (ať vidíš fotku hned)
   const url = URL.createObjectURL(file);
   preview.src = url;
   preview.style.display = "block";
@@ -375,6 +376,44 @@ async function compressImageToJpeg(file) {
   currentY = 0;
   scale = 1;
   applyTransform();
+
+  // ==== upload test ====
+  try {
+    console.log("1) compress start", { name: file.name, size: file.size });
+
+    const jpgBlob = await compressImageToJpeg(file);
+
+    console.log("2) compress done", { blobSize: jpgBlob.size });
+
+    const filePath = `pf/${token}/photo.jpg`;
+
+    console.log("3) upload start", { bucket: "pf-photos", filePath });
+
+    const { error } = await supabaseClient
+      .storage
+      .from("pf-photos")
+      .upload(filePath, jpgBlob, {
+        contentType: "image/jpeg",
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    console.log("4) upload OK");
+
+    const { data } = supabaseClient
+      .storage
+      .from("pf-photos")
+      .getPublicUrl(filePath);
+
+    console.log("5) Public URL:", data.publicUrl);
+
+    localStorage.setItem(`pf_photo_url_${token}`, data.publicUrl);
+
+  } catch (err) {
+    console.error("UPLOAD FAILED:", err);
+    alert("Upload sel – mrkni do konzole (UPLOAD FAILED).");
+  }
 });
 
     let dragging = false;
