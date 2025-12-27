@@ -267,6 +267,27 @@
 
   const params = new URLSearchParams(location.search);
   const token = params.get("t") || crypto.randomUUID();
+    (async () => {
+  const { data, error } = await supabaseClient
+    .storage
+    .from("pf-photos")
+    .list(`pf/${token}`, { limit: 1 });
+
+  console.log("AUTOLOAD pf/" + token, data, error);
+
+  if (data && data.length > 0) {
+    const file = data[0];
+
+    const { data: urlData } = supabaseClient
+      .storage
+      .from("pf-photos")
+      .getPublicUrl(`pf/${token}/${file.name}`);
+
+    const preview = document.getElementById("preview");
+    preview.src = urlData.publicUrl;
+    preview.style.display = "block";
+  }
+})();
 
   // ... zbytek tvého kódu pokračuje tady
     
