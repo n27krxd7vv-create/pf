@@ -268,27 +268,20 @@
   const params = new URLSearchParams(location.search);
   const token = params.get("t") || crypto.randomUUID();
     (async () => {
-  const { data, error } = await supabaseClient
+  const preview = document.getElementById("preview");
+
+  const { data, error } = supabaseClient
     .storage
     .from("pf-photos")
-    .list(`pf/${token}`, { limit: 1 });
+    .getPublicUrl(`pf/${token}/photo.jpg`);
 
-  console.log("AUTOLOAD pf/" + token, data, error);
+  console.log("AUTOLOAD photo.jpg", data, error);
 
-  if (data && data.length > 0) {
-    const file = data[0];
-
-    const { data: urlData } = supabaseClient
-      .storage
-      .from("pf-photos")
-      .getPublicUrl(`pf/${token}/${file.name}`);
-
-    const preview = document.getElementById("preview");
-    preview.src = urlData.publicUrl;
+  if (data?.publicUrl) {
+    preview.src = data.publicUrl;
     preview.style.display = "block";
   }
 })();
-
   // ... zbytek tvého kódu pokračuje tady
     
     /* ===== hvězdičky (jako index) ===== */
